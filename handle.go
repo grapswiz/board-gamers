@@ -9,6 +9,11 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
+)
+
+const (
+	layout = "January 02, 2006 at 15:04PM"
 )
 
 type Tweet struct {
@@ -25,10 +30,10 @@ type Values struct {
 }
 
 type ArrivalOfGames struct {
-	Shop      string `json:"shop"`
-	Games     []string
-	CreatedAt string
-	Url       string
+	Shop      string    `json:"shop"`
+	Games     []string  `json:"games"`
+	CreatedAt time.Time `json:"createdAt"`
+	Url       string    `json:"url" datastore:",noindex"`
 }
 
 func init() {
@@ -73,10 +78,15 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Infof(ctx, "%v", games)
 
+	createdAt, err := time.Parse(layout, t.CreatedAt)
+	if err != nil {
+		log.Errorf(ctx, "Time Parse error: %v", err)
+		return
+	}
 	a := &ArrivalOfGames{
 		Shop:      "トリックプレイ",
 		Games:     games,
-		CreatedAt: t.CreatedAt,
+		CreatedAt: createdAt,
 		Url:       t.LinkToTweet,
 	}
 	key := datastore.NewIncompleteKey(ctx, "ArrivalOfGames", nil)
