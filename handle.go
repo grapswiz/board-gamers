@@ -1,28 +1,34 @@
 package board_gamers
 
 import (
-	"net/http"
+	"encoding/json"
 	"fmt"
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
-	"google.golang.org/appengine/urlfetch"
-	"encoding/json"
-	"strings"
+	"net/http"
 	"regexp"
-	"bytes"
+	"strings"
 )
 
 type Tweet struct {
-	UserName	string
-	Text		string
-	LinkToTweet	string
-	CreatedAt	string
+	UserName    string
+	Text        string
+	LinkToTweet string
+	CreatedAt   string
 }
 
 type Values struct {
-	Value1		string        `json:"value1"`
-	Value2		string        `json:"value2"`
-	Value3		string        `json:"value3"`
+	Value1 string `json:"value1"`
+	Value2 string `json:"value2"`
+	Value3 string `json:"value3"`
+}
+
+type ArrivalOfGames struct {
+	Shop      string `json:"shop"`
+	Games     []string
+	CreatedAt string
+	Url       string
 }
 
 func init() {
@@ -34,7 +40,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello, World!")
 }
 
-func trickplayHandler(w http.ResponseWriter, r *http.Request)  {
+func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	decoder := json.NewDecoder(r.Body)
@@ -50,7 +56,7 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	log.Infof(ctx, "this is 入荷 tweet: " + t.Text)
+	log.Infof(ctx, "this is 入荷 tweet: "+t.Text)
 
 	//TODO 入荷した商品名を抽出する
 	//TODO 全ての、の後ろにスペースを挿入する
@@ -67,26 +73,15 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request)  {
 	}
 	log.Infof(ctx, "%v", games)
 
-	client := urlfetch.Client(ctx)
-
-	param := Values{
-		Value1: "あるボドゲ屋",
-		Value2: games[1],
-		Value3: games[2],
+	a := &ArrivalOfGames{
+		Shop:      "トリックプレイ",
+		Games:     games,
+		CreatedAt: t.CreatedAt,
+		Url:       t.LinkToTweet,
 	}
-	paramBytes, err := json.Marshal(param)
-	if err != nil {
-		log.Errorf(ctx, "%v", err)
-		return
-	}
-	if err != nil {
-		log.Errorf(ctx, "%v", err)
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-	_, err = client.Do(req)
-	if err != nil {
-		log.Errorf(ctx, "%v", err)
+	key := datastore.NewIncompleteKey(ctx, "ArrivalOfGames", nil)
+	if _, err := datastore.Put(ctx, key, a); err != nil {
+		log.Errorf(ctx, "Datastore put error: %v", err)
 		return
 	}
 }
