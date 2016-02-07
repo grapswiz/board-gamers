@@ -10,6 +10,9 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"golang.org/x/net/context"
+	"google.golang.org/appengine/urlfetch"
+	"bytes"
 )
 
 const (
@@ -92,6 +95,33 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	key := datastore.NewIncompleteKey(ctx, "ArrivalOfGames", nil)
 	if _, err := datastore.Put(ctx, key, a); err != nil {
 		log.Errorf(ctx, "Datastore put error: %v", err)
+		return
+	}
+
+	postToIOS(ctx, a)
+}
+
+func postToIOS(ctx context.Context, a *ArrivalOfGames) {
+	client := urlfetch.Client(ctx)
+
+	param := Values{
+		Value1:	a.Shop,
+		Value2: a.Games[0],
+		Value3: a.Games[1],
+	}
+	paramBytes, err := json.Marshal(param)
+	if err != nil {
+		log.Errorf(ctx, "json marshal error: %v", err)
+		return
+	}
+	if err != nil {
+		log.Errorf(ctx, "http request error: %v", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	_, err = client.Do(req)
+	if err != nil {
+		log.Errorf(ctx, "client do error: %v", err)
 		return
 	}
 }
