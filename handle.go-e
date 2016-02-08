@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"google.golang.org/appengine"
-	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
 	"net/http"
 	"regexp"
@@ -13,6 +12,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/urlfetch"
 	"bytes"
+	"github.com/mjibson/goon"
 )
 
 const (
@@ -33,6 +33,7 @@ type Values struct {
 }
 
 type ArrivalOfGames struct {
+	Id	int64	`datastore:"-" goon:"id"`
 	Shop      string    `json:"shop"`
 	Games     []string  `json:"games"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -50,6 +51,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
+	g := goon.NewGoon(r)
 
 	decoder := json.NewDecoder(r.Body)
 	var t Tweet
@@ -92,8 +94,7 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: createdAt,
 		Url:       t.LinkToTweet,
 	}
-	key := datastore.NewIncompleteKey(ctx, "ArrivalOfGames", nil)
-	if _, err := datastore.Put(ctx, key, a); err != nil {
+	if _, err := g.Put(a); err != nil {
 		log.Errorf(ctx, "Datastore put error: %v", err)
 		return
 	}
