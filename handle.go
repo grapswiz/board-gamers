@@ -43,6 +43,9 @@ type ArrivalOfGames struct {
 func init() {
 	http.HandleFunc("/hello", handler)
 	http.HandleFunc("/webhook/trickplay", trickplayHandler)
+
+
+	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
