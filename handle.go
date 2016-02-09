@@ -73,7 +73,7 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 
 	//TODO 入荷した商品名を抽出する
 	//TODO 全ての、の後ろにスペースを挿入する
-	re := regexp.MustCompile("、?「(.+?)」|、?([^「」]+「.+?」)")
+	re := regexp.MustCompile("、?「(.+?)」|、?([^「」]+拡張「.+?」)|、?[^「」]+「(.+?)」")
 	submatch := re.FindAllStringSubmatch(t.Text, -1)
 	var games []string
 	for _, v := range submatch {
@@ -81,6 +81,8 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 			games = append(games, v[1])
 		} else if v[2] != "" {
 			games = append(games, v[2])
+		} else if v[3] != "" {
+			games = append(games, v[3])
 		}
 
 	}
