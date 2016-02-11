@@ -33,7 +33,7 @@ type Values struct {
 }
 
 type ArrivalOfGames struct {
-	Id	int64	`datastore:"-" goon:"id"`
+	Id	int64	`datastore:"-" goon:"id" json:"id"`
 	Shop      string    `json:"shop"`
 	Games     []string  `json:"games"`
 	CreatedAt time.Time `json:"createdAt"`
