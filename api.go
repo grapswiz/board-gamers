@@ -1,11 +1,12 @@
 package board_gamers
 
 import (
-	"net/http"
-	"google.golang.org/appengine/datastore"
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
+	"encoding/json"
 	"github.com/mjibson/goon"
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/log"
+	"net/http"
 )
 
 func ArrivalOfGamesHandler(w http.ResponseWriter, r *http.Request) {
@@ -14,8 +15,19 @@ func ArrivalOfGamesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var a []ArrivalOfGames
 	if _, err := g.GetAll(datastore.NewQuery("ArrivalOfGames").Order("CreatedAt"), &a); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Errorf(ctx, "GetAll error: %v", err)
 		return
 	}
-	log.Infof(ctx, "%v", a)
+
+	bodyBytes, err := json.Marshal(a)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Errorf(ctx, "json marshal error: %v", err)
+		return
+	}
+
+	log.Infof(ctx, "a: %v", a)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bodyBytes)
 }
