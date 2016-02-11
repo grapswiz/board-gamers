@@ -1,18 +1,18 @@
 package board_gamers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/mjibson/goon"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
+	"google.golang.org/appengine/urlfetch"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
-	"golang.org/x/net/context"
-	"google.golang.org/appengine/urlfetch"
-	"bytes"
-	"github.com/mjibson/goon"
 )
 
 const (
@@ -33,7 +33,7 @@ type Values struct {
 }
 
 type ArrivalOfGames struct {
-	Id	int64	`datastore:"-" goon:"id" json:"id"`
+	Id        int64     `datastore:"-" goon:"id" json:"id"`
 	Shop      string    `json:"shop"`
 	Games     []string  `json:"games"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -43,7 +43,6 @@ type ArrivalOfGames struct {
 func init() {
 	http.HandleFunc("/hello", handler)
 	http.HandleFunc("/webhook/trickplay", trickplayHandler)
-
 
 	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
 }
@@ -111,7 +110,7 @@ func postToIOS(ctx context.Context, a *ArrivalOfGames) {
 	client := urlfetch.Client(ctx)
 
 	param := Values{
-		Value1:	a.Shop,
+		Value1: a.Shop,
 		Value2: a.Games[0],
 		Value3: a.Games[1],
 	}
