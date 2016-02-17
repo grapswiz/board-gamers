@@ -13,11 +13,26 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/garyburd/go-oauth/oauth"
+	"io/ioutil"
+	"github.com/dghubble/sessions"
 )
 
 const (
 	layout = "January 02, 2006 at 15:04PM"
+	sessionName = "board-gamers"
+	sessionSecret = "board-gamers-secret"
+	sessionUserKey = "twitterID"
 )
+
+var sessionStore = sessions.NewCookieStore([]byte(sessionSecret), nil)
+
+var oauthClient = oauth.Client{
+	TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
+	ResourceOwnerAuthorizationURI: "https://api.twitter.com/oauth/authorize",
+	TokenRequestURI:               "https://api.twitter.com/oauth/access_token",
+}
 
 type Tweet struct {
 	UserName    string
@@ -40,11 +55,42 @@ type ArrivalOfGames struct {
 	Url       string    `json:"url" datastore:",noindex"`
 }
 
+type Config struct {
+	TwitterConsumerKey	string
+	TwitterConsumerSecret	string
+
+}
+
+type User struct {
+	UserId string `json:"userId" goon:"id"`
+	ScreenName string `json:"screenName" datastore:",noindex"`
+	Shops []string `json:"shops"`
+	NotificationKey string `json:"notificationKey"`
+}
+
+type Shop struct {
+	Name string `json:"name"`
+	NotificationKey string `json:"notificationKey"`
+}
+
 func init() {
+	b, err := ioutil.ReadFile("config.json")
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(b, &oauthClient.Credentials); err != nil {
+		panic(err)
+	}
+
 	http.HandleFunc("/hello", handler)
 	http.HandleFunc("/webhook/trickplay", trickplayHandler)
 
 	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
+
+	http.HandleFunc("/twitter/login", twitterLoginHandler)
+	http.HandleFunc("/twitter/callback", twitterCallbackHandler)
+
+	http.HandleFunc("/", indexHandler)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +150,78 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	postToIOS(ctx, a)
+}
+
+func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+	httpClient := urlfetch.Client(ctx)
+	tmpCred, err := oauthClient.RequestTemporaryCredentials(httpClient, "http://" + r.Host + "/twitter/callback", nil)
+	if err != nil {
+		http.Error(w, "tmpCred error", http.StatusInternalServerError)
+		log.Errorf(ctx, "tmpCred error: %v", err)
+		return
+	}
+
+	http.Redirect(w, r, oauthClient.AuthorizationURL(tmpCred, nil), http.StatusFound)
+	return
+}
+
+func twitterCallbackHandler(w http.ResponseWriter, r *http.Request)  {
+	ctx := appengine.NewContext(r)
+
+	token := r.FormValue("oauth_token")
+	tmpCred := &oauth.Credentials{
+		Token: token,
+		Secret: oauthClient.Credentials.Secret,
+	}
+	httpClient := urlfetch.Client(ctx)
+	tokenCred, v, err := oauthClient.RequestToken(httpClient, tmpCred, r.FormValue("oauth_verifier"))
+	if err != nil {
+		http.Error(w, "request token error", http.StatusInternalServerError)
+		log.Errorf(ctx, "request token error: %v", err)
+		return
+	}
+	log.Infof(ctx, "token cred: %v", tokenCred)
+	log.Infof(ctx, "url.Values: %v", v)
+
+	// セッションに保存
+	session := sessionStore.New(sessionName)
+	session.Values[sessionUserKey] = v["user_id"][0]
+	session.Save(w)
+
+	// ユーザIDを保存する
+	u := &User{
+		UserId: v["user_id"][0],
+		ScreenName: v["screen_name"][0],
+	}
+	log.Infof(ctx, "user: %v", u)
+	g := goon.NewGoon(r)
+	if _, err = g.Put(u); err != nil {
+		log.Errorf(ctx, "goon put error: %v", err)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusFound)
+	return
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+
+	session, err := sessionStore.Get(r, sessionName)
+	if err == nil {
+		id := session.Values[sessionUserKey]
+		log.Infof(ctx, "id: %v", id)
+	}
+
+	log.Infof(ctx, "Hello Index!")
+}
+
+func isAuthenticated(req *http.Request) bool {
+	if _, err := sessionStore.Get(req, sessionName); err == nil {
+		return true
+	}
+	return false
 }
 
 func postToIOS(ctx context.Context, a *ArrivalOfGames) {
