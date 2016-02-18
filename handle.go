@@ -86,6 +86,7 @@ func init() {
 	http.HandleFunc("/webhook/trickplay", trickplayHandler)
 
 	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
+	http.HandleFunc("/api/v1/user", UserHandler)
 
 	http.HandleFunc("/twitter/login", twitterLoginHandler)
 	http.HandleFunc("/twitter/callback", twitterCallbackHandler)
