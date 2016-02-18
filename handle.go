@@ -70,7 +70,7 @@ type User struct {
 
 type Shop struct {
 	Name string `json:"name"`
-	NotificationKey string `json:"notificationKey"`
+	NotificationKeys []string `json:"notificationKeys"`
 }
 
 func init() {
