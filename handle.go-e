@@ -3,7 +3,6 @@ package board_gamers
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/mjibson/goon"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
@@ -82,7 +81,6 @@ func init() {
 		panic(err)
 	}
 
-	http.HandleFunc("/hello", handler)
 	http.HandleFunc("/webhook/trickplay", trickplayHandler)
 
 	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
@@ -90,12 +88,6 @@ func init() {
 
 	http.HandleFunc("/twitter/login", twitterLoginHandler)
 	http.HandleFunc("/twitter/callback", twitterCallbackHandler)
-
-	http.HandleFunc("/", indexHandler)
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, World!")
 }
 
 func trickplayHandler(w http.ResponseWriter, r *http.Request) {
@@ -206,17 +198,17 @@ func twitterCallbackHandler(w http.ResponseWriter, r *http.Request)  {
 	return
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
-
-	session, err := sessionStore.Get(r, sessionName)
-	if err == nil {
-		id := session.Values[sessionUserKey]
-		log.Infof(ctx, "id: %v", id)
-	}
-
-	log.Infof(ctx, "Hello Index!")
-}
+//func indexHandler(w http.ResponseWriter, r *http.Request) {
+//	ctx := appengine.NewContext(r)
+//
+//	session, err := sessionStore.Get(r, sessionName)
+//	if err == nil {
+//		id := session.Values[sessionUserKey]
+//		log.Infof(ctx, "id: %v", id)
+//	}
+//
+//	log.Infof(ctx, "Hello Index!")
+//}
 
 func isAuthenticated(req *http.Request) bool {
 	if _, err := sessionStore.Get(req, sessionName); err == nil {
