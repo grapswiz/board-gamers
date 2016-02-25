@@ -43,7 +43,6 @@ type Tweet struct {
 type Values struct {
 	Value1 string `json:"value1"`
 	Value2 string `json:"value2"`
-	Value3 string `json:"value3"`
 }
 
 type ArrivalOfGames struct {
@@ -222,8 +221,7 @@ func postToIOS(ctx context.Context, a *ArrivalOfGames) {
 
 	param := Values{
 		Value1: a.Shop,
-		Value2: a.Games[0],
-		Value3: a.Games[1],
+		Value2: strings.Join(a.Games, ","),
 	}
 	paramBytes, err := json.Marshal(param)
 	if err != nil {
