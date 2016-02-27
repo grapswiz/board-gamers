@@ -84,6 +84,7 @@ func init() {
 
 	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
 	http.HandleFunc("/api/v1/user", UserHandler)
+	http.HandleFunc("/api/v1/auth", AuthHandler)
 
 	http.HandleFunc("/twitter/login", twitterLoginHandler)
 	http.HandleFunc("/twitter/callback", twitterCallbackHandler)
