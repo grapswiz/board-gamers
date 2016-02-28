@@ -54,7 +54,7 @@
             <md-list-item class="md-3-line" ng-repeat="aog in arrivalOfGames">
                 <div class="md-list-item-text" layout="column">
                     <h3>{{aog.shop}}</h3>
-                    <h4><span ng-repeat="game in aog.games">{{game}}{{$last ? "" : ", "}}</span></h4>
+                    <h4><span ng-repeat="game in aog.games">{{game | hankakuspace}}{{$last ? "" : ", "}}</span></h4>
                     <h5>{{aog.createdAt}}</h5>
                 </div>
             </md-list-item>
@@ -104,6 +104,11 @@
 
                 this.openMenu = function ($mdOpenMenu, ev) {
                     $mdOpenMenu(ev);
+                }
+            })
+            .filter("hankakuspace", function () {
+                return function (input) {
+                    return input.replace(/　/g, " ");
                 }
             });
 </script>
