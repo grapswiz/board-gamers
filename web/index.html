@@ -6,9 +6,9 @@
     <link rel="stylesheet" href="node_modules/angular-material/angular-material.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<body ng-app="StarterApp" layout="column" ng-cloak>
+<body ng-app="StarterApp" layout="column" ng-controller="DemoController as ctrl" ng-cloak>
 
-<md-toolbar layout="row" ng-controller="PositionDemoController as ctrl">
+<md-toolbar layout="row">
     <div class="md-toolbar-tools">
         <md-button class="md-icon-button" aria-label="Settings">
             <md-icon>camera</md-icon>
@@ -48,6 +48,17 @@
                 <md-checkbox class="md-secondary"></md-checkbox>
             </md-list-item>
         </md-list>
+
+        <md-list ng-if="arrivalOfGames" layout-wrap>
+            <md-subheader class="md-no-sticky">最新の入荷情報</md-subheader>
+            <md-list-item class="md-3-line" ng-repeat="aog in arrivalOfGames">
+                <div class="md-list-item-text" layout="column">
+                    <h3>{{aog.shop}}</h3>
+                    <h4><span ng-repeat="game in aog.games">{{game}}{{$last ? "" : ", "}}</span></h4>
+                    <h5>{{aog.createdAt}}</h5>
+                </div>
+            </md-list-item>
+        </md-list>
     </md-content>
 </div>
 
@@ -68,7 +79,7 @@
                         })
                         .accentPalette("orange");
             })
-            .controller("PositionDemoController", function ($mdDialog, $http, $scope) {
+            .controller("DemoController", function ($mdDialog, $http, $scope) {
                 $http({
                     method: "GET",
                     url: "/api/v1/auth"
@@ -78,6 +89,17 @@
                             console.log(response);
                         }, function (response) {
                             console.log(response);
+                        });
+
+                $http({
+                    method: "GET",
+                    url: "/api/v1/arrivalOfGames"
+                })
+                        .then(function (response) {
+                            $scope.arrivalOfGames = response.data;
+                            console.log(response);
+                        }, function (response) {
+                            console.error(response);
                         });
 
                 this.openMenu = function ($mdOpenMenu, ev) {
