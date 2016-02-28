@@ -5,6 +5,8 @@
     <title>board-gamers</title>
     <link rel="stylesheet" href="node_modules/angular-material/angular-material.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="node_modules/angular/angular.js"></script>
 </head>
 <body ng-app="StarterApp" layout="column" ng-controller="DemoController as ctrl" ng-cloak>
 
@@ -62,7 +64,6 @@
     </md-content>
 </div>
 
-<script src="node_modules/angular/angular.js"></script>
 <script src="node_modules/angular-aria/angular-aria.js"></script>
 <script src="node_modules/angular-animate/angular-animate.js"></script>
 <script src="node_modules/angular-material/angular-material.js"></script>
