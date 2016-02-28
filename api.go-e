@@ -19,7 +19,7 @@ func ArrivalOfGamesHandler(w http.ResponseWriter, r *http.Request) {
 	g := goon.NewGoon(r)
 
 	var a []ArrivalOfGames
-	if _, err := g.GetAll(datastore.NewQuery("ArrivalOfGames").Order("CreatedAt"), &a); err != nil {
+	if _, err := g.GetAll(datastore.NewQuery("ArrivalOfGames").Order("-CreatedAt"), &a); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Errorf(ctx, "GetAll error: %v", err)
 		return
