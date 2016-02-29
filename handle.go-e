@@ -13,15 +13,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dghubble/sessions"
 	"github.com/garyburd/go-oauth/oauth"
 	"io/ioutil"
-	"github.com/dghubble/sessions"
 )
 
 const (
-	layout = "January 02, 2006 at 15:04PM"
-	sessionName = "board-gamers"
-	sessionSecret = "board-gamers-secret"
+	layout         = "January 02, 2006 at 15:04PM"
+	sessionName    = "board-gamers"
+	sessionSecret  = "board-gamers-secret"
 	sessionUserKey = "twitterID"
 )
 
@@ -54,20 +54,19 @@ type ArrivalOfGames struct {
 }
 
 type Config struct {
-	TwitterConsumerKey	string
-	TwitterConsumerSecret	string
-
+	TwitterConsumerKey    string
+	TwitterConsumerSecret string
 }
 
 type User struct {
-	UserId string `json:"userId" goon:"id"`
-	ScreenName string `json:"screenName" datastore:",noindex"`
-	Shops []string `json:"shops"`
-	NotificationKey string `json:"notificationKey"`
+	UserId          string   `json:"userId" goon:"id"`
+	ScreenName      string   `json:"screenName" datastore:",noindex"`
+	Shops           []string `json:"shops"`
+	NotificationKey string   `json:"notificationKey"`
 }
 
 type Shop struct {
-	Name string `json:"name"`
+	Name             string   `json:"name"`
 	NotificationKeys []string `json:"notificationKeys"`
 }
 
@@ -148,7 +147,7 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 	httpClient := urlfetch.Client(ctx)
-	tmpCred, err := oauthClient.RequestTemporaryCredentials(httpClient, "http://" + r.Host + "/twitter/callback", nil)
+	tmpCred, err := oauthClient.RequestTemporaryCredentials(httpClient, "http://"+r.Host+"/twitter/callback", nil)
 	if err != nil {
 		http.Error(w, "tmpCred error", http.StatusInternalServerError)
 		log.Errorf(ctx, "tmpCred error: %v", err)
@@ -159,12 +158,12 @@ func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func twitterCallbackHandler(w http.ResponseWriter, r *http.Request)  {
+func twitterCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	token := r.FormValue("oauth_token")
 	tmpCred := &oauth.Credentials{
-		Token: token,
+		Token:  token,
 		Secret: oauthClient.Credentials.Secret,
 	}
 	httpClient := urlfetch.Client(ctx)
@@ -184,7 +183,7 @@ func twitterCallbackHandler(w http.ResponseWriter, r *http.Request)  {
 
 	// ユーザIDを保存する
 	u := &User{
-		UserId: v["user_id"][0],
+		UserId:     v["user_id"][0],
 		ScreenName: v["screen_name"][0],
 	}
 	log.Infof(ctx, "user: %v", u)

@@ -10,8 +10,8 @@ import (
 )
 
 type Auth struct {
-	IsLoggedIn	bool `json:"isLoggedIn"`
-	User	*User `json:"user"`
+	IsLoggedIn bool  `json:"isLoggedIn"`
+	User       *User `json:"user"`
 }
 
 func ArrivalOfGamesHandler(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +46,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // jsonを受け取ってdatastoreに保存
-func PostUser(w http.ResponseWriter, r *http.Request)  {
+func PostUser(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 	g := goon.NewGoon(r)
 
@@ -66,7 +66,7 @@ func PostUser(w http.ResponseWriter, r *http.Request)  {
 	}
 }
 
-func AuthHandler(w http.ResponseWriter, r *http.Request)  {
+func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	var isLoggedIn bool
@@ -74,7 +74,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request)  {
 
 	session, err := sessionStore.Get(r, sessionName)
 	if err != nil {
-		isLoggedIn = false;
+		isLoggedIn = false
 		id = ""
 
 		log.Infof(ctx, "sessionStore.get error: %v", err)
@@ -84,10 +84,10 @@ func AuthHandler(w http.ResponseWriter, r *http.Request)  {
 
 		valueStr, ok := value.(string)
 		if ok {
-			isLoggedIn = true;
+			isLoggedIn = true
 			id = valueStr
 		} else {
-			isLoggedIn = false;
+			isLoggedIn = false
 			id = ""
 		}
 	}
@@ -102,12 +102,12 @@ func AuthHandler(w http.ResponseWriter, r *http.Request)  {
 
 		a = &Auth{
 			IsLoggedIn: isLoggedIn,
-			User: u,
+			User:       u,
 		}
 	} else {
 		a = &Auth{
 			IsLoggedIn: isLoggedIn,
-			User: nil,
+			User:       nil,
 		}
 	}
 
