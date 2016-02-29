@@ -20,7 +20,7 @@
         </h1>
         <span flex></span>
         <md-menu>
-            <img ng-src="http://www.paper-glasses.com/api/twipi/{{auth.user.screenName}}/normal" width="37px" height="37px" style="border-radius: 37px" ng-click="$mdOpenMenu($event)">
+            <img ng-src="http://www.paper-glasses.com/api/twipi/{{::auth.user.screenName}}/normal" width="37px" height="37px" style="border-radius: 37px" ng-click="$mdOpenMenu($event)">
             <md-menu-content>
                 <md-menu-item ng-if="!auth.isLoggedIn">
                     <a class="md-button" href="twitter/login">
@@ -53,21 +53,18 @@
 
         <md-list ng-if="arrivalOfGames" layout-wrap>
             <md-subheader class="md-no-sticky">最新の入荷情報</md-subheader>
-            <md-list-item class="md-3-line" ng-repeat="aog in arrivalOfGames">
+            <md-list-item class="md-3-line" ng-repeat="aog in ::arrivalOfGames">
                 <div class="md-list-item-text" layout="column">
-                    <h3>{{aog.shop}}</h3>
-                    <h4><span ng-repeat="game in aog.games">{{game | hankakuspace}}{{$last ? "" : ", "}}</span></h4>
-                    <h5>{{aog.createdAt}}</h5>
+                    <h3>{{::aog.shop}}</h3>
+                    <h4><span ng-repeat="game in ::aog.games">{{::game | hankakuspace}}{{$last ? "" : ", "}}</span></h4>
+                    <h5>{{::aog.createdAt}}</h5>
                 </div>
             </md-list-item>
         </md-list>
     </md-content>
 </div>
 
-<script src="node_modules/angular-aria/angular-aria.js"></script>
-<script src="node_modules/angular-animate/angular-animate.js"></script>
-<script src="node_modules/angular-material/angular-material.js"></script>
-<script src="bundle.js"></script>
+<script src="angular-circumstamce.js"></script>
 <script>
     angular.module("StarterApp", ["ngMaterial"])
             .run(function ($log) {
