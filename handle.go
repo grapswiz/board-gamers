@@ -87,6 +87,7 @@ func init() {
 
 	http.HandleFunc("/twitter/login", twitterLoginHandler)
 	http.HandleFunc("/twitter/callback", twitterCallbackHandler)
+	http.HandleFunc("/twitter/logout", twitterLogoutHandler)
 }
 
 func trickplayHandler(w http.ResponseWriter, r *http.Request) {
@@ -192,6 +193,16 @@ func twitterCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		log.Errorf(ctx, "goon put error: %v", err)
 		return
 	}
+
+	http.Redirect(w, r, "/", http.StatusFound)
+	return
+}
+
+func twitterLogoutHandler(w http.ResponseWriter, r *http.Request)  {
+	ctx := appengine.NewContext(r)
+
+	sessionStore.Destroy(w, sessionName)
+	log.Infof(ctx, "session destroyed")
 
 	http.Redirect(w, r, "/", http.StatusFound)
 	return

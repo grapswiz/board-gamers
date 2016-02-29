@@ -28,7 +28,7 @@
                     </a>
                 </md-menu-item>
                 <md-menu-item ng-if="auth.isLoggedIn">
-                    <a class="md-button">
+                    <a class="md-button" href="twitter/logout">
                         ログアウト
                     </a>
                 </md-menu-item>
