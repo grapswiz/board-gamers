@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>board-gamers</title>
     <link rel="stylesheet" href="node_modules/angular-material/angular-material.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script src="node_modules/angular/angular.js"></script>
 </head>
@@ -12,9 +11,6 @@
 
 <md-toolbar layout="row">
     <div class="md-toolbar-tools">
-        <md-button class="md-icon-button" aria-label="Settings">
-            <md-icon>camera</md-icon>
-        </md-button>
         <h1>
             <span>ボムボムプリン</span>
         </h1>
