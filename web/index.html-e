@@ -34,6 +34,18 @@
 </md-toolbar>
 
 <div flex layout="row">
+    <md-sidenav class="md-sidenav-left" md-is-locked-open="$mdMedia('gt-md')">
+        <md-content layout-padding>
+            <md-list>
+                <md-list-item>
+                    ホーム
+                </md-list-item>
+                <md-list-item>
+                    設定
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </md-sidenav>
     <md-content flex id="content">
         <md-list>
             <md-subheader class="md-no-sticky">設定</md-subheader>
