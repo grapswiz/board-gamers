@@ -11,6 +11,9 @@
 
 <md-toolbar layout="row">
     <div class="md-toolbar-tools">
+        <md-button ng-click="toggleSidenav()">
+            <md-icon md-svg-src="img/icons/ic_menu_24px.svg" aria-label="Menu" hide-gt-md></md-icon>
+        </md-button>
         <h1>
             <span>ボムボムプリン</span>
         </h1>
@@ -34,7 +37,7 @@
 </md-toolbar>
 
 <div flex layout="row">
-    <md-sidenav class="md-sidenav-left" md-is-locked-open="$mdMedia('gt-md')">
+    <md-sidenav class="md-sidenav-left" md-is-locked-open="$mdMedia('gt-md')" md-component-id="sidenav">
         <md-content layout-padding>
             <md-list>
                 <md-list-item>
@@ -85,7 +88,7 @@
                         })
                         .accentPalette("orange");
             })
-            .controller("DemoController", function ($mdDialog, $http, $scope) {
+            .controller("DemoController", function ($mdDialog, $http, $scope, $mdSidenav) {
                 $http({
                     method: "GET",
                     url: "/api/v1/auth"
@@ -107,9 +110,9 @@
                         }, function (response) {
                             console.error(response);
                         });
-
-                this.openMenu = function ($mdOpenMenu, ev) {
-                    $mdOpenMenu(ev);
+                
+                $scope.toggleSidenav = function () {
+                  $mdSidenav("sidenav").toggle();
                 }
             })
             .filter("hankakuspace", function () {
