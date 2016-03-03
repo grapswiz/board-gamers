@@ -80,6 +80,7 @@ func init() {
 	}
 
 	http.HandleFunc("/webhook/trickplay", trickplayHandler)
+	http.HandleFunc("/webhook/tendays", tendaysHandler)
 
 	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
 	http.HandleFunc("/api/v1/user", UserHandler)
@@ -143,6 +144,26 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	postToIOS(ctx, a)
+}
+
+func tendaysHandler(w http.ResponseWriter, r *http.Request)  {
+	ctx := appengine.NewContext(r)
+
+	decoder := json.NewDecoder(r.Body)
+	var t Tweet
+	err := decoder.Decode(&t)
+	if err != nil {
+		http.Error(w, "json parse error", 500)
+		log.Errorf(ctx, "json parse error: %v", err)
+	}
+
+	//TODO 入荷した判定をする
+	if !strings.Contains(t.Text, "入荷しました") || !strings.Contains(t.Text, "入荷いたしました") {
+		log.Infof(ctx, "no nyuuka")
+		return
+	}
+
+	log.Infof(ctx, "this is 入荷 tweet: "+t.Text)
 }
 
 func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
