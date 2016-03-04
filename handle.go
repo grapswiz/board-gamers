@@ -146,7 +146,7 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	postToIOS(ctx, a)
 }
 
-func tendaysHandler(w http.ResponseWriter, r *http.Request)  {
+func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	decoder := json.NewDecoder(r.Body)
@@ -218,7 +218,7 @@ func twitterCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func twitterLogoutHandler(w http.ResponseWriter, r *http.Request)  {
+func twitterLogoutHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	sessionStore.Destroy(w, sessionName)
