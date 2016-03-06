@@ -102,13 +102,6 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "json parse error", 500)
 		log.Errorf(ctx, "json parse error: %v", err)
 	}
-	//TODO 入荷した判定をする
-	if !strings.Contains(t.Text, "入荷しております") {
-		log.Infof(ctx, "no nyuuka")
-		return
-	}
-
-	log.Infof(ctx, "this is 入荷 tweet: "+t.Text)
 
 	//TODO 入荷した商品名を抽出する
 	//TODO 全ての、の後ろにスペースを挿入する
@@ -126,6 +119,11 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 	log.Infof(ctx, "%v", games)
+
+	if len(games) == 0 {
+		log.Infof(ctx, "this is no nyuuka")
+		return
+	}
 
 	createdAt, err := time.Parse(layout, t.CreatedAt)
 	if err != nil {
