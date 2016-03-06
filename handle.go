@@ -103,8 +103,6 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 		log.Errorf(ctx, "json parse error: %v", err)
 	}
 
-	//TODO 入荷した商品名を抽出する
-	//TODO 全ての、の後ろにスペースを挿入する
 	re := regexp.MustCompile("、?「(.+?)」|、?([^「」]+拡張「.+?」)|、?[^「」]+「(.+?)」")
 	submatch := re.FindAllStringSubmatch(t.Text, -1)
 	var games []string
@@ -146,6 +144,7 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 
 func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
+	g := goon.NewGoon(r)
 
 	decoder := json.NewDecoder(r.Body)
 	var t Tweet
@@ -155,12 +154,43 @@ func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 		log.Errorf(ctx, "json parse error: %v", err)
 	}
 
-	if !strings.Contains(t.Text, "入荷しました") && !strings.Contains(t.Text, "入荷いたしました") {
-		log.Infof(ctx, "no nyuuka")
+	re := regexp.MustCompile("、?「(.+?)」|、?([^「」]+拡張「.+?」)|\n(([^「].+[^、」])、?)を再入荷")
+	submatch := re.FindAllStringSubmatch(t.Text, -1)
+	var games []string
+	for _, v := range submatch {
+		if v[1] != "" {
+			games = append(games, v[1])
+		} else if v[2] != "" {
+			games = append(games, v[2])
+		} else if v[3] != "" {
+			games = append(games, strings.Split(v[3], "、")...)
+		}
+
+	}
+	log.Infof(ctx, "%v", games)
+
+	if len(games) == 0 {
+		log.Infof(ctx, "this is no nyuuka")
 		return
 	}
 
-	log.Infof(ctx, "this is 入荷 tweet: "+t.Text)
+	createdAt, err := time.Parse(layout, t.CreatedAt)
+	if err != nil {
+		log.Errorf(ctx, "Time Parse error: %v", err)
+		return
+	}
+	a := &ArrivalOfGames{
+		Shop:      "テンデイズ",
+		Games:     games,
+		CreatedAt: createdAt,
+		Url:       t.LinkToTweet,
+	}
+	if _, err := g.Put(a); err != nil {
+		log.Errorf(ctx, "Datastore put error: %v", err)
+		return
+	}
+
+	postToIOS(ctx, a)
 }
 
 func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
