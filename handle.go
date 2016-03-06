@@ -226,18 +226,6 @@ func twitterLogoutHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-//func indexHandler(w http.ResponseWriter, r *http.Request) {
-//	ctx := appengine.NewContext(r)
-//
-//	session, err := sessionStore.Get(r, sessionName)
-//	if err == nil {
-//		id := session.Values[sessionUserKey]
-//		log.Infof(ctx, "id: %v", id)
-//	}
-//
-//	log.Infof(ctx, "Hello Index!")
-//}
-
 func isAuthenticated(req *http.Request) bool {
 	if _, err := sessionStore.Get(req, sessionName); err == nil {
 		return true
