@@ -103,6 +103,11 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 		log.Errorf(ctx, "json parse error: %v", err)
 	}
 
+	if !strings.Contains(t.Text, "#トリックプレイ") {
+		log.Infof(ctx, "no nyuuka")
+		return
+	}
+
 	re := regexp.MustCompile("、?「(.+?)」|、?([^「」]+拡張「.+?」)|、?[^「」]+「(.+?)」")
 	submatch := re.FindAllStringSubmatch(t.Text, -1)
 	var games []string
@@ -152,6 +157,11 @@ func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "json parse error", 500)
 		log.Errorf(ctx, "json parse error: %v", err)
+	}
+
+	if !strings.Contains(t.Text, "新入荷") && !strings.Contains(t.Text, "再入荷") {
+		log.Infof(ctx, "no nyuuka")
+		return
 	}
 
 	re := regexp.MustCompile("、?「(.+?)」|、?([^「」]+拡張「.+?」)|\n(([^「].+[^、」])、?)を再入荷")
