@@ -4,14 +4,27 @@
     <meta charset="UTF-8">
     <title>board-gamers</title>
     <link rel="stylesheet" href="node_modules/angular-material/angular-material.min.css">
+    <style>
+        [ng-cloak] {
+            display: none;
+        }
 
-    <script src="node_modules/angular/angular.min.js"></script>
+        md-list-item > button {
+            width: 100%;
+            text-align: left !important;
+            height: 70px;
+        }
+
+        md-icon.avatar {
+            margin-right: 20px;
+        }
+    </style>
 </head>
-<body ng-app="StarterApp" layout="column" ng-controller="DemoController as ctrl" ng-cloak>
+<body ng-app="StarterApp" layout="column" ng-controller="DemoController as ctrl">
 
 <md-toolbar layout="row">
     <div class="md-toolbar-tools">
-        <md-button ng-click="toggleSidenav()" aria-label="toggleSidenav">
+        <md-button ng-click="toggleSidenav()" aria-label="toggle Sidenav" md-ink-ripple>
             <md-icon md-svg-src="img/icons/ic_menu_black_24px.svg" aria-label="Menu" hide-gt-md></md-icon>
         </md-button>
         <h1>
@@ -41,10 +54,16 @@
         <md-content layout-padding>
             <md-list>
                 <md-list-item>
-                    ホーム
+                    <md-button aria-label="Home">
+                        <md-icon md-svg-src="img/icons/ic_home_black_24px.svg" class="avatar"></md-icon>
+                        ホーム
+                    </md-button>
                 </md-list-item>
                 <md-list-item>
-                    設定
+                    <md-button aria-label="Settings">
+                        <md-icon md-svg-src="img/icons/ic_settings_black_24px.svg" class="avatar"></md-icon>
+                        設定
+                    </md-button>
                 </md-list-item>
             </md-list>
         </md-content>
@@ -65,7 +84,7 @@
         <md-list ng-if="arrivalOfGames" layout-wrap>
             <md-subheader class="md-no-sticky">最新の入荷情報</md-subheader>
             <md-list-item class="md-3-line" ng-repeat="aog in ::arrivalOfGames">
-                <div class="md-list-item-text" layout="column">
+                <div class="md-list-item-text" layout="column" ng-cloak>
                     <div>{{::aog.shop}}</div>
                     <div><span ng-repeat="game in ::aog.games">{{::game | hankakuspace}}{{$last ? "" : ", "}}</span></div>
                     <div>{{::aog.createdAt}}</div>
@@ -75,6 +94,7 @@
     </md-content>
 </div>
 
+<script src="node_modules/angular/angular.min.js"></script>
 <script src="angular-circumstamce.js"></script>
 <script>
     angular.module("StarterApp", ["ngMaterial"])
