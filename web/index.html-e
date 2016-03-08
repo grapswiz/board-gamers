@@ -97,7 +97,6 @@
     </md-content>
 </div>
 
-<script src="node_modules/angular/angular.min.js"></script>
 <script src="angular-circumstamce.js"></script>
 <script>
     angular.module("StarterApp", ["ngMaterial"])
