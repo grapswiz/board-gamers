@@ -1,13 +1,13 @@
 package board_gamers
 
 import (
-	"bytes"
 	"encoding/json"
 	"github.com/mjibson/goon"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/urlfetch"
+	"google.golang.org/appengine/delay"
 	"net/http"
 	"regexp"
 	"strings"
@@ -16,6 +16,7 @@ import (
 	"github.com/dghubble/sessions"
 	"github.com/garyburd/go-oauth/oauth"
 	"io/ioutil"
+	"google.golang.org/appengine/taskqueue"
 )
 
 const (
@@ -144,7 +145,7 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postToIOS(ctx, a)
+	postToIOS(ctx, a, w)
 }
 
 func tendaysHandler(w http.ResponseWriter, r *http.Request) {
@@ -200,7 +201,7 @@ func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postToIOS(ctx, a)
+	postToIOS(ctx, a, w)
 }
 
 func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -273,9 +274,24 @@ func isAuthenticated(req *http.Request) bool {
 	return false
 }
 
-func postToIOS(ctx context.Context, a *ArrivalOfGames) {
+var notificationPost = delay.Func("notificationPost", func(ctx context.Context, bodyStr string) {
+	log.Infof(ctx, "delay httpPost")
+
 	client := urlfetch.Client(ctx)
 
+	if err != nil {
+		log.Errorf(ctx, "httpPost request error: %v", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	_, err = client.Do(req)
+	if err != nil {
+		log.Errorf(ctx, "httpPost client do error: %v", err)
+		return
+	}
+})
+
+func postToIOS(ctx context.Context, a *ArrivalOfGames, w http.ResponseWriter) {
 	param := Values{
 		Value1: a.Shop,
 		Value2: strings.Join(a.Games, ","),
@@ -285,14 +301,15 @@ func postToIOS(ctx context.Context, a *ArrivalOfGames) {
 		log.Errorf(ctx, "json marshal error: %v", err)
 		return
 	}
+	paramStr := string(paramBytes[:len(paramBytes)])
+
+	t, err := notificationPost.Task(paramStr)
 	if err != nil {
-		log.Errorf(ctx, "http request error: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	req.Header.Set("Content-Type", "application/json")
-	_, err = client.Do(req)
-	if err != nil {
-		log.Errorf(ctx, "client do error: %v", err)
+	if _, err := taskqueue.Add(ctx, t, ""); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
