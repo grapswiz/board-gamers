@@ -5,9 +5,9 @@ import (
 	"github.com/mjibson/goon"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/delay"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/urlfetch"
-	"google.golang.org/appengine/delay"
 	"net/http"
 	"regexp"
 	"strings"
@@ -15,8 +15,8 @@ import (
 
 	"github.com/dghubble/sessions"
 	"github.com/garyburd/go-oauth/oauth"
-	"io/ioutil"
 	"google.golang.org/appengine/taskqueue"
+	"io/ioutil"
 )
 
 const (
