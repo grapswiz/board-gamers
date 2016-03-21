@@ -34,11 +34,14 @@ var oauthClient = oauth.Client{
 	TokenRequestURI:               "https://api.twitter.com/oauth/access_token",
 }
 
+var secretKey string
+
 type Tweet struct {
 	UserName    string
 	Text        string
 	LinkToTweet string
 	CreatedAt   string
+	SecretKey   string
 }
 
 type Values struct {
@@ -72,12 +75,22 @@ type Shop struct {
 }
 
 func init() {
-	b, err := ioutil.ReadFile("config.json")
-	if err != nil {
-		panic(err)
+	{
+		b, err := ioutil.ReadFile("config.json")
+		if err != nil {
+			panic(err)
+		}
+		if err := json.Unmarshal(b, &oauthClient.Credentials); err != nil {
+			panic(err)
+		}
 	}
-	if err := json.Unmarshal(b, &oauthClient.Credentials); err != nil {
-		panic(err)
+
+	{
+		b, err := ioutil.ReadFile("secretKey")
+		if err != nil {
+			panic(err)
+		}
+		secretKey = string(b)
 	}
 
 	http.HandleFunc("/webhook/trickplay", trickplayHandler)
@@ -101,6 +114,11 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "json parse error", 500)
 		log.Errorf(ctx, "json parse error: %v", err)
+	}
+
+	if t.SecretKey != secretKey {
+		log.Infof(ctx, "invalid secretKey received: %v", t.SecretKey)
+		return
 	}
 
 	if !strings.Contains(t.Text, "#トリックプレイ") {
@@ -142,6 +160,11 @@ func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "json parse error", 500)
 		log.Errorf(ctx, "json parse error: %v", err)
+	}
+
+	if t.SecretKey != secretKey {
+		log.Infof(ctx, "invalid secretKey received: %v", t.SecretKey)
+		return
 	}
 
 	if !strings.Contains(t.Text, "新入荷") && !strings.Contains(t.Text, "再入荷") {
