@@ -94,7 +94,6 @@ func init() {
 
 func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
-	g := goon.NewGoon(r)
 
 	decoder := json.NewDecoder(r.Body)
 	var t Tweet
@@ -129,28 +128,13 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdAt, err := time.Parse(layout, t.CreatedAt)
-	if err != nil {
-		log.Errorf(ctx, "Time Parse error: %v", err)
-		return
-	}
-	a := &ArrivalOfGames{
-		Shop:      "トリックプレイ",
-		Games:     games,
-		CreatedAt: createdAt,
-		Url:       t.LinkToTweet,
-	}
-	if _, err := g.Put(a); err != nil {
-		log.Errorf(ctx, "Datastore put error: %v", err)
-		return
-	}
+	saveArrivalOfGames(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
 
-	postToIOS(ctx, a, w)
+	postToIOS(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
 }
 
 func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
-	g := goon.NewGoon(r)
 
 	decoder := json.NewDecoder(r.Body)
 	var t Tweet
@@ -185,23 +169,9 @@ func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdAt, err := time.Parse(layout, t.CreatedAt)
-	if err != nil {
-		log.Errorf(ctx, "Time Parse error: %v", err)
-		return
-	}
-	a := &ArrivalOfGames{
-		Shop:      "テンデイズ",
-		Games:     games,
-		CreatedAt: createdAt,
-		Url:       t.LinkToTweet,
-	}
-	if _, err := g.Put(a); err != nil {
-		log.Errorf(ctx, "Datastore put error: %v", err)
-		return
-	}
+	saveArrivalOfGames(ctx, w, "テンデイズ", games, t.CreatedAt, t.LinkToTweet)
 
-	postToIOS(ctx, a, w)
+	postToIOS(ctx, w, "テンデイズ", games, t.CreatedAt, t.LinkToTweet)
 }
 
 func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -291,10 +261,43 @@ var notificationPost = delay.Func("notificationPost", func(ctx context.Context, 
 	}
 })
 
-func postToIOS(ctx context.Context, a *ArrivalOfGames, w http.ResponseWriter) {
+var save = delay.Func("save", func(ctx context.Context, shop string, games []string, createdAt string, url string) {
+	g := goon.FromContext(ctx)
+
+	at, err := time.Parse(layout, createdAt)
+	if err != nil {
+		log.Errorf(ctx, "Time Parse error: %v", err)
+		return
+	}
+	a := &ArrivalOfGames{
+		Shop:      "トリックプレイ",
+		Games:     games,
+		CreatedAt: at,
+		Url:       url,
+	}
+
+	if _, err := g.Put(a); err != nil {
+		log.Errorf(ctx, "Datastore put error: %v", err)
+		return
+	}
+})
+
+func saveArrivalOfGames(ctx context.Context, w http.ResponseWriter, shop string, games []string, createdAt string, url string) {
+	t, err := save.Task(shop, games, createdAt, url)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if _, err := taskqueue.Add(ctx, t, ""); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func postToIOS(ctx context.Context, w http.ResponseWriter, shop string, games []string, createdAt string, url string) {
 	param := Values{
-		Value1: a.Shop,
-		Value2: strings.Join(a.Games, ","),
+		Value1: shop,
+		Value2: strings.Join(games, ","),
 	}
 	paramBytes, err := json.Marshal(param)
 	if err != nil {
