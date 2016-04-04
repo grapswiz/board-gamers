@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/">
     <meta charset="UTF-8">
     <meta name=viewport content="width=device-width, initial-scale=1">
     <title>ボ</title>
@@ -103,50 +104,5 @@
 </div>
 
 <script src="angular-circumstamce.js"></script>
-<script>
-    angular.module("StarterApp", ["ngMaterial"])
-            .run(function ($log) {
-                $log.debug("MyApp is ready!");
-            })
-            .config(function ($mdThemingProvider) {
-                $mdThemingProvider.theme("default")
-                        .primaryPalette("grey", {
-                            "default": "50"
-                        })
-                        .accentPalette("orange");
-            })
-            .controller("DemoController", function ($mdDialog, $http, $scope, $mdSidenav) {
-                $http({
-                    method: "GET",
-                    url: "/api/v1/auth"
-                })
-                        .then(function (response) {
-                            $scope.auth = response.data;
-                            console.log(response);
-                        }, function (response) {
-                            console.log(response);
-                        });
-
-                $http({
-                    method: "GET",
-                    url: "/api/v1/arrivalOfGames"
-                })
-                        .then(function (response) {
-                            $scope.arrivalOfGames = response.data;
-                            console.log(response);
-                        }, function (response) {
-                            console.error(response);
-                        });
-                
-                $scope.toggleSidenav = function () {
-                  $mdSidenav("sidenav").toggle();
-                }
-            })
-            .filter("hankakuspace", function () {
-                return function (input) {
-                    return input.replace(/　/g, " ");
-                }
-            });
-</script>
 </body>
 </html>
