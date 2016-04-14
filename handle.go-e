@@ -21,6 +21,7 @@ import (
 
 const (
 	layout         = "January 02, 2006 at 15:04PM"
+	layout2 = "January 2, 2006 at 15:04PM"
 	sessionName    = "board-gamers"
 	sessionSecret  = "board-gamers-secret"
 	sessionUserKey = "twitterID"
@@ -114,6 +115,7 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "json parse error", 500)
 		log.Errorf(ctx, "json parse error: %v", err)
+		return
 	}
 
 	if t.SecretKey != secretKey {
@@ -290,8 +292,13 @@ var save = delay.Func("save", func(ctx context.Context, shop string, games []str
 
 	at, err := time.Parse(layout, createdAt)
 	if err != nil {
-		log.Errorf(ctx, "Time Parse error: %v", err)
-		return
+		log.Errorf(ctx, "Time Parse error layout: %v", err)
+
+		at, err = time.Parse(layout2, createdAt)
+		if err != nil {
+			log.Errorf(ctx, "Time Parse error layout2: %v", err)
+			return
+		}
 	}
 	a := &ArrivalOfGames{
 		Shop:      "トリックプレイ",
@@ -332,10 +339,12 @@ func postToIOS(ctx context.Context, w http.ResponseWriter, shop string, games []
 
 	t, err := notificationPost.Task(paramStr)
 	if err != nil {
+		log.Errorf(ctx, "notificationPost.Task error: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if _, err := taskqueue.Add(ctx, t, ""); err != nil {
+		log.Errorf(ctx, "taskqueue.Add error: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
