@@ -13,6 +13,10 @@ handlers:
 - url: /_ah/queue/go/delay
   script: _go_app
   login: admin
+- url: /_ah/start
+  script: _go_app
+- url: /_ah/stop
+  script: _go_app
 - url: /webhook.*
   script: _go_app
 - url: /twitter.*
