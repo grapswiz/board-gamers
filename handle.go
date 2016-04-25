@@ -94,19 +94,19 @@ func init() {
 		secretKey = string(b)
 	}
 
-	http.HandleFunc("/webhook/trickplay", trickplayHandler)
-	http.HandleFunc("/webhook/tendays", tendaysHandler)
+	http.HandleFunc("/webhook/trickplay", TrickplayHandler)
+	http.HandleFunc("/webhook/tendays", TendaysHandler)
 
 	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
 	http.HandleFunc("/api/v1/user", UserHandler)
 	http.HandleFunc("/api/v1/auth", AuthHandler)
 
-	http.HandleFunc("/twitter/login", twitterLoginHandler)
-	http.HandleFunc("/twitter/callback", twitterCallbackHandler)
-	http.HandleFunc("/twitter/logout", twitterLogoutHandler)
+	http.HandleFunc("/twitter/login", TwitterLoginHandler)
+	http.HandleFunc("/twitter/callback", TwitterCallbackHandler)
+	http.HandleFunc("/twitter/logout", TwitterLogoutHandler)
 }
 
-func trickplayHandler(w http.ResponseWriter, r *http.Request) {
+func TrickplayHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	decoder := json.NewDecoder(r.Body)
@@ -155,7 +155,7 @@ func extractTrickplayGames(text string) (games []string) {
 	}
 }
 
-func tendaysHandler(w http.ResponseWriter, r *http.Request) {
+func TendaysHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	decoder := json.NewDecoder(r.Body)
@@ -205,7 +205,7 @@ func extractTendaysGames(text string) (games []string) {
 	}
 }
 
-func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
+func TwitterLoginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 	httpClient := urlfetch.Client(ctx)
 	tmpCred, err := oauthClient.RequestTemporaryCredentials(httpClient, "http://"+r.Host+"/twitter/callback", nil)
@@ -219,7 +219,7 @@ func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func twitterCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func TwitterCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	token := r.FormValue("oauth_token")
@@ -258,7 +258,7 @@ func twitterCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func twitterLogoutHandler(w http.ResponseWriter, r *http.Request) {
+func TwitterLogoutHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	sessionStore.Destroy(w, sessionName)
