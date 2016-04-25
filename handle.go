@@ -21,7 +21,7 @@ import (
 
 const (
 	layout         = "January 02, 2006 at 15:04PM"
-	layout2 = "January 2, 2006 at 15:04PM"
+	layout2        = "January 2, 2006 at 15:04PM"
 	sessionName    = "board-gamers"
 	sessionSecret  = "board-gamers-secret"
 	sessionUserKey = "twitterID"
