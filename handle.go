@@ -128,9 +128,21 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	games := extractTrickplayGames(t.Text)
+
+	if len(games) == 0 {
+		log.Infof(ctx, "this is no nyuuka")
+		return
+	}
+
+	saveArrivalOfGames(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
+
+	postToIOS(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
+}
+
+func extractTrickplayGames(text string) (games []string) {
 	re := regexp.MustCompile("、?「(.+?)」|、?([^「」]+拡張「.+?」)|、?[^「」]+「(.+?)」")
-	submatch := re.FindAllStringSubmatch(t.Text, -1)
-	var games []string
+	submatch := re.FindAllStringSubmatch(text, -1)
 	for _, v := range submatch {
 		if v[1] != "" {
 			games = append(games, v[1])
@@ -141,16 +153,6 @@ func trickplayHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	log.Infof(ctx, "%v", games)
-
-	if len(games) == 0 {
-		log.Infof(ctx, "this is no nyuuka")
-		return
-	}
-
-	saveArrivalOfGames(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
-
-	postToIOS(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
 }
 
 func tendaysHandler(w http.ResponseWriter, r *http.Request) {
@@ -174,19 +176,8 @@ func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	re := regexp.MustCompile("、?「(.+?)」|、?([^「」]+拡張「.+?」)|\n(([^「].+[^、」])、?)を再入荷")
-	submatch := re.FindAllStringSubmatch(t.Text, -1)
-	var games []string
-	for _, v := range submatch {
-		if v[1] != "" {
-			games = append(games, v[1])
-		} else if v[2] != "" {
-			games = append(games, v[2])
-		} else if v[3] != "" {
-			games = append(games, strings.Split(v[3], "、")...)
-		}
+	games := extractTendaysGames(t.Text)
 
-	}
 	log.Infof(ctx, "%v", games)
 
 	if len(games) == 0 {
@@ -197,6 +188,21 @@ func tendaysHandler(w http.ResponseWriter, r *http.Request) {
 	saveArrivalOfGames(ctx, w, "テンデイズ", games, t.CreatedAt, t.LinkToTweet)
 
 	postToIOS(ctx, w, "テンデイズ", games, t.CreatedAt, t.LinkToTweet)
+}
+
+func extractTendaysGames(text string) (games []string) {
+	re := regexp.MustCompile("、?「(.+?)」|、?([^「」]+拡張「.+?」)|\n(([^「].+[^、」])、?)を再入荷")
+	submatch := re.FindAllStringSubmatch(text, -1)
+	for _, v := range submatch {
+		if v[1] != "" {
+			games = append(games, v[1])
+		} else if v[2] != "" {
+			games = append(games, v[2])
+		} else if v[3] != "" {
+			games = append(games, strings.Split(v[3], "、")...)
+		}
+
+	}
 }
 
 func twitterLoginHandler(w http.ResponseWriter, r *http.Request) {
