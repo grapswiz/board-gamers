@@ -31,4 +31,20 @@ func TestExtractTendaysGames(t *testing.T) {
 	if result := extractTendaysGames(text); !reflect.DeepEqual(result, want) {
 		t.Errorf("extractTendaysGames = %v, want %v", result, want)
 	}
+
+	want = []string{"コーヒーロースター", "リスボン、世界への扉", "バルーンチャレンジ"}
+	text = "国産ゲーム三種「コーヒーロースター」、「リスボン、世界への扉」、「バルーンチャレンジ」を新入荷しました。"
+	if result := extractTendaysGames(text); !reflect.DeepEqual(result, want) {
+		t.Errorf("extractTendaysGames = %v, want %v", result, want)
+	}
+
+	// まぁいっかという感じ
+	//want = []string{"人気のダイスマネージメントゲーム「キングスフォージ」の拡張セット二種", "エイリアンフロンティアの拡張セット二種（和訳はつきません）", "メモワール’44", "キングスフォージ（二版）", "タイニーエピックディフェンダーズ"}
+	//text = "人気のダイスマネージメントゲーム「キングスフォージ」の拡張セット二種、エイリアンフロンティアの拡張セット二種（和訳はつきません）、メモワール’44を新入荷しました。\nキングスフォージ（二版）、タイニーエピックディフェンダーズを再入荷しました。"
+	//if result := extractTendaysGames(text); !reflect.DeepEqual(result, want) {
+	//	t.Errorf("extractTendaysGames = %v, want %v", result, want)
+	//}
+
+	want = []string{"カウンシル・オブ・フォー", "アンユージュアルサスペクツ", "世界の七不思議デュエル"}
+	text = "「大いなる文明の曙（メガシヴィライゼーション）」用の大判スリーブを取り扱い開始しました。お役立ちアイテムコーナーの「スリーブ」ドロップダウンメニューからお選びください。\nカウンシル・オブ・フォー、アンユージュアルサスペクツ、世界の七不思議デュエルを再入荷しました。"
 }
