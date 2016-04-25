@@ -96,6 +96,7 @@ func init() {
 
 	http.HandleFunc("/webhook/trickplay", TrickplayHandler)
 	http.HandleFunc("/webhook/tendays", TendaysHandler)
+	http.HandleFunc("/webhook/banesto", BanestoHandler)
 
 	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
 	http.HandleFunc("/api/v1/user", UserHandler)
@@ -208,6 +209,55 @@ func extractTendaysGames(text string) (games []string) {
 
 	return games
 }
+
+func BanestoHandler(w http.ResponseWriter, r *http.Request)  {
+	ctx := appengine.NewContext(r)
+
+	decoder := json.NewDecoder(r.Body)
+	var t Tweet
+	err := decoder.Decode(&t)
+	if err != nil {
+		http.Error(w, "json parse error", 500)
+		log.Errorf(ctx, "json parse error: %v", err)
+		return
+	}
+
+	if t.SecretKey != secretKey {
+		log.Infof(ctx, "invalid secretKey received: %v", t.SecretKey)
+		return
+	}
+
+	if !strings.Contains(t.Text, "ボードゲーム入荷案内") {
+		log.Infof(ctx, "no nyuuka")
+		return
+	}
+
+	processBanestoGames(t.Text)
+
+	//games := extractBanestoGames(t.Text)
+	//
+	//log.Infof(ctx, "%v", games)
+	//
+	//if len(games) == 0 {
+	//	log.Infof(ctx, "this is no nyuuka")
+	//	return
+	//}
+	//
+	//saveArrivalOfGames(ctx, w, "バネスト", games, t.CreatedAt, t.LinkToTweet)
+	//
+	//postToIOS(ctx, w, "バネスト", games, t.CreatedAt, t.LinkToTweet)
+}
+
+func processBanestoGames(text string)  {
+	//TODO urlを抽出
+	//fetchBanestoGames.Task()
+}
+
+var fetchBanestoGames = delay.Func("fetchBanestoGames", func(ctx context.Context, url string) {
+	//TODO URLfetch
+	//TODO HTMLparse
+	//TODO ゲームがあればsaveArrivalOfGamesとpostToIOS
+})
 
 func TwitterLoginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
