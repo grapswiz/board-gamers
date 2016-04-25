@@ -1,12 +1,11 @@
 package board_gamers
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
-func TestExtractTrickplayGames(t *testing.T)  {
-
+func TestExtractTrickplayGames(t *testing.T) {
 	want := []string{"HAWAIIミニ拡張", "ロシアンレールロードミニ拡張＆ストーンエイジミニ拡張", "ヘックメック拡張"}
 	text := "新しい神タイルや島タイルが含まれる「HAWAIIミニ拡張」、新しい技術者とボーナスタイルのセット「ロシアンレールロードミニ拡張＆ストーンエイジミニ拡張」、「ヘックメック拡張」が入荷しております。よろしくお願い致します。"
 	if result := extractTrickplayGames(text); !reflect.DeepEqual(result, want) {
