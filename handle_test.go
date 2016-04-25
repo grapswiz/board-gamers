@@ -18,3 +18,17 @@ func TestExtractTrickplayGames(t *testing.T) {
 		t.Errorf("extractTrickplayGames = %v, want %v", result, want)
 	}
 }
+
+func TestExtractTendaysGames(t *testing.T) {
+	want := []string{"ゲームマーケットカタログ", "ゲームマーケットホールマップ", "ナショナルエコノミー", "ドミニオンマニアックスSpecial"}
+	text := "国内最大級のボードゲームイベントまでもうすぐ！「ゲームマーケットカタログ」、「ゲームマーケットホールマップ」を新入荷しました。どちらも入場券を兼ねています。\nナショナルエコノミー、ドミニオンマニアックスSpecialを再入荷しました。"
+	if result := extractTendaysGames(text); !reflect.DeepEqual(result, want) {
+		t.Errorf("extractTendaysGames = %v, want %v", result, want)
+	}
+
+	want = []string{"大いなる狂気の書日本語版", "スチームタイム", "二枚目が好き", "山頂をめざせ", "おしくらモンスター", "双天至尊堂・天九牌", "カルカソンヌ", "お邪魔者", "8か28", "ワードバスケット"}
+	text = "デッキ構築し、協力して迫りくる魔物たちを撃退しろ！「大いなる狂気の書日本語版」、「スチームタイム」、「二枚目が好き」、「山頂をめざせ」、「おしくらモンスター」、「双天至尊堂・天九牌」を新入荷しました。\nカルカソンヌ、お邪魔者、8か28、ワードバスケットを再入荷しました。"
+	if result := extractTendaysGames(text); !reflect.DeepEqual(result, want) {
+		t.Errorf("extractTendaysGames = %v, want %v", result, want)
+	}
+}
