@@ -153,6 +153,8 @@ func extractTrickplayGames(text string) (games []string) {
 		}
 
 	}
+
+	return games
 }
 
 func TendaysHandler(w http.ResponseWriter, r *http.Request) {
@@ -203,6 +205,8 @@ func extractTendaysGames(text string) (games []string) {
 		}
 
 	}
+
+	return games
 }
 
 func TwitterLoginHandler(w http.ResponseWriter, r *http.Request) {
