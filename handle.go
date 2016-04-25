@@ -300,7 +300,7 @@ var save = delay.Func("save", func(ctx context.Context, shop string, games []str
 		}
 	}
 	a := &ArrivalOfGames{
-		Shop:      "トリックプレイ",
+		Shop:      shop,
 		Games:     games,
 		CreatedAt: at,
 		Url:       url,
