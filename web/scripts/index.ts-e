@@ -4,7 +4,7 @@
 import {App} from "./app";
 import {Header} from "./header";
 import {Settings} from "./settings";
-import {AogList} from "./aogList";
+import {AogList} from "./aogList/aogList";
 
 const app = angular.module("app", ["ngComponentRouter", "ngMaterial"]);
 

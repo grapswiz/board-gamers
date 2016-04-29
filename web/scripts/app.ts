@@ -1,5 +1,5 @@
 import {Settings} from "./settings";
-import {AogList} from "./aogList";
+import {AogList} from "./aogList/aogList";
 
 export class AppController {
     constructor() {

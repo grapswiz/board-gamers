@@ -1,4 +1,4 @@
-import {ArrivalOfGame} from "./interfaces";
+import {ArrivalOfGame} from "../interfaces";
 import IHttpService = angular.IHttpService;
 export class AogListController {
     aogs: ArrivalOfGame[];
@@ -23,7 +23,7 @@ export const AogList = {
             <md-list-item class="md-3-line md-long-text" ng-repeat="aog in ::$ctrl.aogs">
                 <div class="md-list-item-text" ng-cloak>
                     <h3>{{::aog.shop}}</h3>
-                    <p><span ng-repeat="game in ::aog.games">{{::game}}</span></p>
+                    <p><span ng-repeat="game in ::aog.games">{{::game}}{{$last ? "" : ", "}}</span></p>
                     <div>{{::aog.createdAt}}</div>
                 </div>
             </md-list-item>
