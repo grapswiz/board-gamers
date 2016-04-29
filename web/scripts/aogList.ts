@@ -1,0 +1,32 @@
+import {ArrivalOfGame} from "./interfaces";
+import IHttpService = angular.IHttpService;
+export class AogListController {
+    aogs: ArrivalOfGame[];
+
+    constructor(private $http: IHttpService) {
+    }
+
+    $routerOnActivate() {
+        this.$http.get<ArrivalOfGame[]>("/api/v1/arrivalOfGames")
+            .then((res) => {
+                this.aogs = res.data;
+            });
+    }
+}
+
+export const AogList = {
+    name: "aogList",
+    controller: AogListController,
+    template: `
+        <md-list layout-wrap>
+            <md-subheader class="md-no-sticky">最新の入荷情報</md-subheader>
+            <md-list-item class="md-3-line md-long-text" ng-repeat="aog in ::$ctrl.aogs">
+                <div class="md-list-item-text" ng-cloak>
+                    <h3>{{::aog.shop}}</h3>
+                    <p><span ng-repeat="game in ::aog.games">{{::game}}</span></p>
+                    <div>{{::aog.createdAt}}</div>
+                </div>
+            </md-list-item>
+        </md-list>
+    `
+};

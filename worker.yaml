@@ -27,4 +27,4 @@ handlers:
 - url: /
   static_dir: web
 skip_files:
-- web/node_modules/.*
+- ^(.*/)?.*/node_modules/.*

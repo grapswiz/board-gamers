@@ -15,6 +15,9 @@
   "dependencies": {
     "angularjs/angular.d.ts": {
       "ref": "9f0f926a12026287b5a4a229e5672c01e7549313"
+    },
+    "angular-material/angular-material.d.ts" : {
+      "ref": "7aefae2603e448fd59a41cd35249bd4a158a4b6d"
     }
   }
 }
