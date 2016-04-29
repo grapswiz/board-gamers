@@ -24,7 +24,7 @@ export const AogList = {
                 <div class="md-list-item-text" ng-cloak>
                     <h3>{{::aog.shop}}</h3>
                     <p><span ng-repeat="game in ::aog.games">{{::game}}{{$last ? "" : ", "}}</span></p>
-                    <div>{{::aog.createdAt}}</div>
+                    <div am-time-ago="::aog.createdAt" am-format="YYYY-MM-DDThh:mm:ssZ"></div>
                 </div>
             </md-list-item>
         </md-list>

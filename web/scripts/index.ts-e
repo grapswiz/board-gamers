@@ -6,7 +6,7 @@ import {Header} from "./header";
 import {Settings} from "./settings";
 import {AogList} from "./aogList/aogList";
 
-const app = angular.module("app", ["ngComponentRouter", "ngMaterial"]);
+const app = angular.module("app", ["ngComponentRouter", "ngMaterial", "angularMoment"]);
 
 app
     .config(["$mdThemingProvider", "$locationProvider", ($mdThemingProvider:angular.material.IThemingProvider, $locationProvider:ng.ILocationProvider) => {
