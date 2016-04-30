@@ -36,6 +36,7 @@ var oauthClient = oauth.Client{
 }
 
 var secretKey string
+var pushUrl string
 
 type Tweet struct {
 	UserName    string
@@ -92,6 +93,14 @@ func init() {
 			panic(err)
 		}
 		secretKey = string(b)
+	}
+
+	{
+		b, err := ioutil.ReadFile("pushUrl")
+		if err != nil {
+			panic(err)
+		}
+		pushUrl = string(b)
 	}
 
 	http.HandleFunc("/webhook/trickplay", TrickplayHandler)
@@ -334,6 +343,7 @@ var notificationPost = delay.Func("notificationPost", func(ctx context.Context, 
 
 	client := urlfetch.Client(ctx)
 
+	req, err := http.NewRequest("POST", pushUrl, strings.NewReader(bodyStr))
 	if err != nil {
 		log.Errorf(ctx, "httpPost request error: %v", err)
 		return
