@@ -30,7 +30,7 @@ export const Header = {
         </h1>
         <span flex></span>
         <md-menu>
-            <img ng-src="http://www.paper-glasses.com/api/twipi/{{::$ctrl.auth.user.screenName}}/normal" width="37px" height="37px" style="border-radius: 37px" ng-click="$mdOpenMenu($event)">
+            <img ng-src="https://twitter.com/{{::$ctrl.auth.user.screenName}}/profile_image?size=normal" width="37px" height="37px" style="border-radius: 37px" ng-click="$mdOpenMenu($event)">
             <md-menu-content>
                 <md-menu-item ng-if="!$ctrl.auth.isLoggedIn">
                     <a class="md-button" href="twitter/login">
