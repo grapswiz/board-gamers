@@ -17,6 +17,8 @@
     "angular-aria": "^1.5.5",
     "angular-material": "^1.0.7",
     "angular-moment": "^1.0.0-beta.6",
+    "angulartics": "github:angulartics/angulartics#pull/468/head",
+    "angulartics-google-analytics": "^0.1.4",
     "moment": "^2.13.0"
   },
   "devDependencies": {

@@ -18,6 +18,9 @@
     },
     "angular-material/angular-material.d.ts" : {
       "ref": "7aefae2603e448fd59a41cd35249bd4a158a4b6d"
+    },
+    "angulartics/angulartics.d.ts" : {
+      "ref": "7de6c3dd94feaeb21f20054b9f30d5dabc5efabd"
     }
   }
 }
