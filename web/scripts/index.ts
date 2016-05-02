@@ -7,7 +7,7 @@ import {Header} from "./header";
 import {Settings} from "./settings";
 import {AogList} from "./aogList/aogList";
 
-const app = angular.module("app", ["ngComponentRouter", "ngMaterial", "angularMoment", "angulartics", "angulartics.google.analytics"]);
+const app = angular.module("app", ["ngComponentRouter", "ngMaterial", "angularMoment", "angulartics", "angulartics.google.analytics", "angular-loading-bar", "ngAnimate"]);
 
 app
     .config(["$mdThemingProvider", "$locationProvider", "$analyticsProvider", ($mdThemingProvider:angular.material.IThemingProvider, $locationProvider:ng.ILocationProvider, $analyticsProvider:angulartics.IAnalyticsServiceProvider) => {
