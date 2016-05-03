@@ -38,15 +38,11 @@ export const Header = {
             <span>ボ</span>
         </h1>
         <span flex></span>
-        <md-menu>
+        <md-button ng-if="!$ctrl.auth.isLoggedIn"><a href="twitter/login">Twitterでログイン</a></md-button>
+        <md-menu ng-if="$ctrl.auth.isLoggedIn">
             <img ng-src="{{::$ctrl.profileImage($ctrl.auth.user)}}" width="37px" height="37px" style="border-radius: 37px" ng-click="$mdOpenMenu($event)">
             <md-menu-content>
-                <md-menu-item ng-if="!$ctrl.auth.isLoggedIn">
-                    <a class="md-button" href="twitter/login">
-                        ログイン
-                    </a>
-                </md-menu-item>
-                <md-menu-item ng-if="$ctrl.auth.isLoggedIn">
+                <md-menu-item>
                     <a class="md-button" href="twitter/logout">
                         ログアウト
                     </a>
