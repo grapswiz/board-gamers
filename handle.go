@@ -17,6 +17,7 @@ import (
 	"github.com/garyburd/go-oauth/oauth"
 	"google.golang.org/appengine/taskqueue"
 	"io/ioutil"
+	"net/url"
 )
 
 const (
@@ -66,14 +67,29 @@ type Config struct {
 
 type User struct {
 	UserId          string   `json:"userId" goon:"id"`
-	ScreenName      string   `json:"screenName" datastore:",noindex"`
+	ScreenName      string   `json:"screenName"`
 	Shops           []string `json:"shops"`
 	NotificationKey string   `json:"notificationKey"`
+	Cred		Credentials `json:"-"`
+	ProfileImageUrl string `json:"profileImageUrl"  datastore:",noindex"`
+	ProfileImageUrlHttps string `json:"profileImageUrlHttps"  datastore:",noindex"`
 }
 
 type Shop struct {
 	Name             string   `json:"name"`
 	NotificationKeys []string `json:"notificationKeys"`
+}
+
+type Credentials struct {
+	Token	string `json:"token"  datastore:",noindex"`
+	Secret	string `json:"secret"  datastore:",noindex"`
+
+}
+
+type UserInfo struct {
+	ProfileImageUrl string `json:"profile_image_url"`
+	ProfileImageUrlHttps string `json:"profile_image_url_https"`
+
 }
 
 func init() {
@@ -305,10 +321,38 @@ func TwitterCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	session.Values[sessionUserKey] = v["user_id"][0]
 	session.Save(w)
 
+	// profileImageUrlの取得
+	values := url.Values{}
+	values.Add("user_id", v["user_id"][0])
+	resp, err := oauthClient.Get(httpClient, &oauth.Credentials{
+		Token: tokenCred.Token,
+		Secret: tokenCred.Secret,
+	}, "https://api.twitter.com/1.1/users/show.json", values)
+	if err != nil {
+		log.Errorf(ctx, "oauthClient.Get error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		p, _ := ioutil.ReadAll(resp.Body)
+		log.Errorf(ctx, "get %s returned status %d, %s", resp.Request.URL, resp.StatusCode, p)
+		return
+	}
+	var info UserInfo
+	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
+		log.Errorf(ctx, "decode error: %v", err)
+	}
+
 	// ユーザIDを保存する
 	u := &User{
 		UserId:     v["user_id"][0],
 		ScreenName: v["screen_name"][0],
+		Cred: Credentials{
+			Token: tokenCred.Token,
+			Secret: tokenCred.Secret,
+		},
+		ProfileImageUrl: info.ProfileImageUrl,
+		ProfileImageUrlHttps: info.ProfileImageUrlHttps,
 	}
 	log.Infof(ctx, "user: %v", u)
 	g := goon.NewGoon(r)

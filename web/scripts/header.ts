@@ -1,10 +1,11 @@
 import IHttpService = angular.IHttpService;
-import {Auth} from "./interfaces";
+import {Auth, User} from "./interfaces";
+import ILocationService = angular.ILocationService;
 
 export class HeaderController {
     auth: Auth;
 
-    constructor(private $mdSidenav:angular.material.ISidenavService, private $http: IHttpService) {
+    constructor(private $mdSidenav:angular.material.ISidenavService, private $http: IHttpService, private $location: ILocationService) {
         this.$http.get<Auth>("/api/v1/auth")
             .then((res) => {
                 this.auth = res.data;
@@ -13,6 +14,14 @@ export class HeaderController {
 
     toggleSidenav() {
         this.$mdSidenav("sidenav").toggle();
+    }
+
+    profileImage(user: User): string {
+        if (!user) {
+            return;
+        }
+
+        return "https" == this.$location.protocol() ? user.profileImageUrlHttps : user.profileImageUrl;
     }
 }
 
@@ -30,7 +39,7 @@ export const Header = {
         </h1>
         <span flex></span>
         <md-menu>
-            <img ng-src="https://twitter.com/{{::$ctrl.auth.user.screenName}}/profile_image?size=normal" width="37px" height="37px" style="border-radius: 37px" ng-click="$mdOpenMenu($event)">
+            <img ng-src="{{::$ctrl.profileImage($ctrl.auth.user)}}" width="37px" height="37px" style="border-radius: 37px" ng-click="$mdOpenMenu($event)">
             <md-menu-content>
                 <md-menu-item ng-if="!$ctrl.auth.isLoggedIn">
                     <a class="md-button" href="twitter/login">

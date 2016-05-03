@@ -8,6 +8,8 @@ export interface User {
     screenName: string;
     // shops: any;
     notificationKey: string;
+    profileImageUrl: string;
+    profileImageUrlHttps: string;
 }
 
 export interface ArrivalOfGame {
