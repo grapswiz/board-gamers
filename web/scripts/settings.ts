@@ -26,8 +26,6 @@ export class SettingsController {
 
             this.initializeState(reg);
         });
-
-        //TODO 今通知を受け取る設定にしているかどうかを保持する
     }
 
     initializeState(reg: any) {
