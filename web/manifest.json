@@ -1,0 +1,8 @@
+{
+  "name": "board-gamers",
+  "short_name": "bodoge",
+  "start_url": "https://board-gamers.appspot.com",
+  "display": "standalone",
+  "gcm_sender_id": "519626585465",
+  "gcm_user_visible_only": true
+}

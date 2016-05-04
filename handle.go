@@ -71,13 +71,8 @@ type User struct {
 	Shops           []string `json:"shops"`
 	NotificationKey string   `json:"notificationKey"`
 	Cred		Credentials `json:"-"`
-	ProfileImageUrl string `json:"profileImageUrl"  datastore:",noindex"`
+	ProfileImageUrl string `json:"profileImageUrl" datastore:",noindex"`
 	ProfileImageUrlHttps string `json:"profileImageUrlHttps"  datastore:",noindex"`
-}
-
-type Shop struct {
-	Name             string   `json:"name"`
-	NotificationKeys []string `json:"notificationKeys"`
 }
 
 type Credentials struct {
@@ -126,6 +121,8 @@ func init() {
 	http.HandleFunc("/api/v1/arrivalOfGames", ArrivalOfGamesHandler)
 	http.HandleFunc("/api/v1/user", UserHandler)
 	http.HandleFunc("/api/v1/auth", AuthHandler)
+	http.HandleFunc("/api/v1/subscription", SubscriptionHandler)
+	//http.HandleFunc("/api/v1/push", PushHandler)
 
 	http.HandleFunc("/twitter/login", TwitterLoginHandler)
 	http.HandleFunc("/twitter/callback", TwitterCallbackHandler)
@@ -164,6 +161,8 @@ func TrickplayHandler(w http.ResponseWriter, r *http.Request) {
 	saveArrivalOfGames(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
 
 	postToIOS(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
+
+	pushNotificationTask(ctx, w, "トリックプレイ", games)
 }
 
 func extractTrickplayGames(text string) (games []string) {
@@ -216,6 +215,8 @@ func TendaysHandler(w http.ResponseWriter, r *http.Request) {
 	saveArrivalOfGames(ctx, w, "テンデイズ", games, t.CreatedAt, t.LinkToTweet)
 
 	postToIOS(ctx, w, "テンデイズ", games, t.CreatedAt, t.LinkToTweet)
+
+	pushNotificationTask(ctx, w, "テンデイズ", games)
 }
 
 func extractTendaysGames(text string) (games []string) {
