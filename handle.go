@@ -66,25 +66,23 @@ type Config struct {
 }
 
 type User struct {
-	UserId          string   `json:"userId" goon:"id"`
-	ScreenName      string   `json:"screenName"`
-	Shops           []string `json:"shops"`
-	NotificationKey string   `json:"notificationKey"`
-	Cred		Credentials `json:"-"`
-	ProfileImageUrl string `json:"profileImageUrl" datastore:",noindex"`
-	ProfileImageUrlHttps string `json:"profileImageUrlHttps"  datastore:",noindex"`
+	UserId               string      `json:"userId" goon:"id"`
+	ScreenName           string      `json:"screenName"`
+	Shops                []string    `json:"shops"`
+	NotificationKey      string      `json:"notificationKey"`
+	Cred                 Credentials `json:"-"`
+	ProfileImageUrl      string      `json:"profileImageUrl" datastore:",noindex"`
+	ProfileImageUrlHttps string      `json:"profileImageUrlHttps"  datastore:",noindex"`
 }
 
 type Credentials struct {
-	Token	string `json:"token"  datastore:",noindex"`
-	Secret	string `json:"secret"  datastore:",noindex"`
-
+	Token  string `json:"token"  datastore:",noindex"`
+	Secret string `json:"secret"  datastore:",noindex"`
 }
 
 type UserInfo struct {
-	ProfileImageUrl string `json:"profile_image_url"`
+	ProfileImageUrl      string `json:"profile_image_url"`
 	ProfileImageUrlHttps string `json:"profile_image_url_https"`
-
 }
 
 func init() {
@@ -236,7 +234,7 @@ func extractTendaysGames(text string) (games []string) {
 	return games
 }
 
-func BanestoHandler(w http.ResponseWriter, r *http.Request)  {
+func BanestoHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	decoder := json.NewDecoder(r.Body)
@@ -274,7 +272,7 @@ func BanestoHandler(w http.ResponseWriter, r *http.Request)  {
 	//postToIOS(ctx, w, "バネスト", games, t.CreatedAt, t.LinkToTweet)
 }
 
-func processBanestoGames(text string)  {
+func processBanestoGames(text string) {
 	//TODO urlを抽出
 	//fetchBanestoGames.Task()
 }
@@ -326,7 +324,7 @@ func TwitterCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	values := url.Values{}
 	values.Add("user_id", v["user_id"][0])
 	resp, err := oauthClient.Get(httpClient, &oauth.Credentials{
-		Token: tokenCred.Token,
+		Token:  tokenCred.Token,
 		Secret: tokenCred.Secret,
 	}, "https://api.twitter.com/1.1/users/show.json", values)
 	if err != nil {
@@ -349,10 +347,10 @@ func TwitterCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		UserId:     v["user_id"][0],
 		ScreenName: v["screen_name"][0],
 		Cred: Credentials{
-			Token: tokenCred.Token,
+			Token:  tokenCred.Token,
 			Secret: tokenCred.Secret,
 		},
-		ProfileImageUrl: info.ProfileImageUrl,
+		ProfileImageUrl:      info.ProfileImageUrl,
 		ProfileImageUrlHttps: info.ProfileImageUrlHttps,
 	}
 	log.Infof(ctx, "user: %v", u)

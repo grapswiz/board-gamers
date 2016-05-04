@@ -1,19 +1,19 @@
 package board_gamers
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"github.com/googlechrome/push-encryption-go/webpush"
 	"github.com/mjibson/goon"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
-	"google.golang.org/appengine/log"
-	"net/http"
-	"golang.org/x/net/context"
-	"google.golang.org/appengine/urlfetch"
-	"encoding/base64"
-	"strings"
-	"github.com/googlechrome/push-encryption-go/webpush"
 	"google.golang.org/appengine/delay"
+	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/taskqueue"
+	"google.golang.org/appengine/urlfetch"
+	"net/http"
+	"strings"
 )
 
 type Auth struct {
@@ -22,36 +22,36 @@ type Auth struct {
 }
 
 type Subscription struct {
-	StatusType string `json:"statusType"`
-	Endpoint string `json:"endpoint"`
-	Keys Keys `json:"keys"`
-	Shops []string `json:"shops"`
+	StatusType string   `json:"statusType"`
+	Endpoint   string   `json:"endpoint"`
+	Keys       Keys     `json:"keys"`
+	Shops      []string `json:"shops"`
 }
 
 type Keys struct {
 	P256dh string `json:"p256dh"`
-	Auth string `json:"auth"`
+	Auth   string `json:"auth"`
 }
 
 type Notification struct {
 	Title string `json:"title"`
-	Body string `json:"body"`
-	Tag string `json:"tag"`
-	Icon string `json:"icon"`
+	Body  string `json:"body"`
+	Tag   string `json:"tag"`
+	Icon  string `json:"icon"`
 }
 
 type Shop struct {
-	Name             string   `json:"name" goon:"id"`
+	Name             string            `json:"name" goon:"id"`
 	NotificationKeys []NotificationKey `json:"notificationKeys"`
 }
 
 type NotificationKey struct {
 	Endpoint string `json:"endpoint"`
-	Keys Keys `json:"keys"`
+	Keys     Keys   `json:"keys"`
 }
 
 type Push struct {
-	Shop string `json:"shop"`
+	Shop         string       `json:"shop"`
 	Notification Notification `json:"notification"`
 }
 
@@ -164,7 +164,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(bodyBytes)
 }
 
-func SubscriptionHandler(w http.ResponseWriter, r *http.Request)  {
+func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		return
 	}
@@ -178,7 +178,7 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	if (sub.StatusType == "unsubscribe") {
+	if sub.StatusType == "unsubscribe" {
 		unsubscribe(ctx, sub.Shops, sub.Endpoint, sub.Keys)
 		return
 	}
@@ -186,7 +186,7 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request)  {
 	subscribe(ctx, sub.Shops, sub.Endpoint, sub.Keys)
 }
 
-func subscribe(ctx context.Context, shops []string, endpoint string, keys Keys)  {
+func subscribe(ctx context.Context, shops []string, endpoint string, keys Keys) {
 	g := goon.FromContext(ctx)
 
 	// load
@@ -214,7 +214,7 @@ func subscribe(ctx context.Context, shops []string, endpoint string, keys Keys) 
 	for is, s := range ss {
 		// check duplicated
 		for _, v := range s.NotificationKeys {
-			if (v.Endpoint == endpoint && v.Keys.P256dh == keys.P256dh && v.Keys.Auth == keys.Auth) {
+			if v.Endpoint == endpoint && v.Keys.P256dh == keys.P256dh && v.Keys.Auth == keys.Auth {
 				return
 			}
 		}
@@ -222,7 +222,7 @@ func subscribe(ctx context.Context, shops []string, endpoint string, keys Keys) 
 		// add
 		ss[is].NotificationKeys = append(ss[is].NotificationKeys, NotificationKey{
 			Endpoint: endpoint,
-			Keys: keys,
+			Keys:     keys,
 		})
 	}
 	log.Infof(ctx, "ss: %v", ss)
@@ -234,7 +234,7 @@ func subscribe(ctx context.Context, shops []string, endpoint string, keys Keys) 
 	}
 }
 
-func unsubscribe(ctx context.Context, shops []string, endpoint string, keys Keys)  {
+func unsubscribe(ctx context.Context, shops []string, endpoint string, keys Keys) {
 	g := goon.FromContext(ctx)
 
 	// load
@@ -263,7 +263,7 @@ func unsubscribe(ctx context.Context, shops []string, endpoint string, keys Keys
 		var newNK []NotificationKey
 
 		for _, v := range s.NotificationKeys {
-			if (v.Endpoint != endpoint && v.Keys.P256dh != keys.P256dh && v.Keys.Auth != keys.Auth) {
+			if v.Endpoint != endpoint && v.Keys.P256dh != keys.P256dh && v.Keys.Auth != keys.Auth {
 				newNK = append(newNK, v)
 			}
 		}
@@ -356,8 +356,8 @@ var pushNotification = delay.Func("push", func(ctx context.Context, shop string,
 	}
 	n := &Notification{
 		Title: "入荷速報",
-		Body: shop + "さんに " + strings.Join(games, " ,") + " が入荷しました！",
-		Tag: "push",
+		Body:  shop + "さんに " + strings.Join(games, " ,") + " が入荷しました！",
+		Tag:   "push",
 	}
 	for _, nk := range s.NotificationKeys {
 		bodyBytes, err := json.Marshal(n)
@@ -379,8 +379,8 @@ var pushNotification = delay.Func("push", func(ctx context.Context, shop string,
 
 		s := &webpush.Subscription{
 			Endpoint: nk.Endpoint,
-			Key: []byte(key),
-			Auth: []byte(auth),
+			Key:      []byte(key),
+			Auth:     []byte(auth),
 		}
 
 		_, err = webpush.Send(httpClient, s, string(bodyBytes), "AIzaSyAA5mxCYKrwjCZwB1E4Jqpp3UYLAEchJ6o")
@@ -391,7 +391,7 @@ var pushNotification = delay.Func("push", func(ctx context.Context, shop string,
 	}
 })
 
-func pushNotificationTask(ctx context.Context, w http.ResponseWriter, shop string, games []string)  {
+func pushNotificationTask(ctx context.Context, w http.ResponseWriter, shop string, games []string) {
 	t, err := pushNotification.Task(shop, games)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
