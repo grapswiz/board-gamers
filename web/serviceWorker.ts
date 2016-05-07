@@ -13,5 +13,19 @@ self.addEventListener("push", (evt:any) => {
                 body: data.body
             }
         )
-    , false)
+    , false);
+});
+
+var clients;
+self.addEventListener("notificationclick", (evt:any) => {
+    evt.notification.close();
+
+    evt.waitUntil(
+        clients.matchAll({type: "window"})
+            .then(() => {
+                if (clients.openWindow) {
+                    return clients.openWindow("https://board-gamers.appspot.com");
+                }
+            })
+    );
 });
