@@ -35,7 +35,7 @@ export const Header = {
             <md-icon md-svg-src="img/icons/ic_menu_black_24px.svg" aria-label="Menu" hide-gt-md></md-icon>
         </md-button>
         <h1>
-            <span>ボ</span>
+            <span>ボドゲ入荷速報(β)</span>
         </h1>
         <span flex></span>
         <md-button ng-if="!$ctrl.auth.isLoggedIn" aria-label="Login with Twitter"><a href="twitter/login">Twitterでログイン</a></md-button>
