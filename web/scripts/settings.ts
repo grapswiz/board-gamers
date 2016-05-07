@@ -167,12 +167,8 @@ export class SettingsController {
 
         return shops;
     }
-    
-    requireLogin() {
-        //TODO ログインしてるかどうかチェックし、してなかったらダイアログを表示する。拒否されたなどの場合はそこで処理を終える。
-    }
 
-    gotoPush7() {
+    goToPush7() {
         this.$window.location.href = "//board-gamers.app.push7.jp";
     }
 }
@@ -181,7 +177,7 @@ export const Settings = {
     name: "settings",
     controller: SettingsController,
     template: `
-<md-list>
+        <md-list>
             <md-subheader class="md-no-sticky">設定</md-subheader>
             <md-list-item ng-show="$ctrl.isSupportedServiceWorker">
                 <md-icon md-svg-src="img/icons/bell.svg" class="avatar"></md-icon>
@@ -198,7 +194,7 @@ export const Settings = {
                 <p>テンデイズ</p>
                 <md-checkbox class="md-secondary" ng-model="$ctrl.isSubscribedTendays"></md-checkbox>
             </md-list-item>
-            <md-list-item ng-show="!$ctrl.isSupportedServiceWorker" ng-click="$ctrl.gotoPush7()">
+            <md-list-item ng-show="!$ctrl.isSupportedServiceWorker" ng-click="$ctrl.goToPush7()">
                 <md-icon></md-icon>
                 <p>Push7で通知を受け取る</p>
             </md-list-item>
