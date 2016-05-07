@@ -38,6 +38,7 @@ var oauthClient = oauth.Client{
 
 var secretKey string
 var pushUrl string
+var push7Api Push7Api
 
 type Tweet struct {
 	UserName    string
@@ -50,6 +51,20 @@ type Tweet struct {
 type Values struct {
 	Value1 string `json:"value1"`
 	Value2 string `json:"value2"`
+}
+
+type Push7 struct {
+	Title string `json:"title"`
+	Body string `json:"body"`
+	Icon string `json:"icon"`
+	Url string `json:"url"`
+	Apikey string `json:"apikey"`
+
+}
+
+type Push7Api struct {
+	Appno string `json:"appno"`
+	Apikey string `json:"apikey"`
 }
 
 type ArrivalOfGames struct {
@@ -112,6 +127,17 @@ func init() {
 		pushUrl = string(b)
 	}
 
+	{
+		b, err := ioutil.ReadFile("push7api.json")
+		if err != nil {
+			panic(err)
+		}
+		if err := json.Unmarshal(b, &push7Api); err != nil {
+			panic(err)
+		}
+
+	}
+
 	http.HandleFunc("/webhook/trickplay", TrickplayHandler)
 	http.HandleFunc("/webhook/tendays", TendaysHandler)
 	http.HandleFunc("/webhook/banesto", BanestoHandler)
@@ -158,9 +184,9 @@ func TrickplayHandler(w http.ResponseWriter, r *http.Request) {
 
 	saveArrivalOfGames(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
 
-	postToIOS(ctx, w, "トリックプレイ", games, t.CreatedAt, t.LinkToTweet)
-
 	pushNotificationTask(ctx, w, "トリックプレイ", games)
+
+	push7(ctx, w, "トリックプレイ", games)
 }
 
 func extractTrickplayGames(text string) (games []string) {
@@ -212,9 +238,9 @@ func TendaysHandler(w http.ResponseWriter, r *http.Request) {
 
 	saveArrivalOfGames(ctx, w, "テンデイズ", games, t.CreatedAt, t.LinkToTweet)
 
-	postToIOS(ctx, w, "テンデイズ", games, t.CreatedAt, t.LinkToTweet)
-
 	pushNotificationTask(ctx, w, "テンデイズ", games)
+
+	push7(ctx, w, "テンデイズ", games)
 }
 
 func extractTendaysGames(text string) (games []string) {
@@ -268,8 +294,6 @@ func BanestoHandler(w http.ResponseWriter, r *http.Request) {
 	//}
 	//
 	//saveArrivalOfGames(ctx, w, "バネスト", games, t.CreatedAt, t.LinkToTweet)
-	//
-	//postToIOS(ctx, w, "バネスト", games, t.CreatedAt, t.LinkToTweet)
 }
 
 func processBanestoGames(text string) {
@@ -280,7 +304,7 @@ func processBanestoGames(text string) {
 var fetchBanestoGames = delay.Func("fetchBanestoGames", func(ctx context.Context, url string) {
 	//TODO URLfetch
 	//TODO HTMLparse
-	//TODO ゲームがあればsaveArrivalOfGamesとpostToIOS
+	//TODO ゲームがあればsaveArrivalOfGamesとpush
 })
 
 func TwitterLoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -381,18 +405,21 @@ func isAuthenticated(req *http.Request) bool {
 	return false
 }
 
-var notificationPost = delay.Func("notificationPost", func(ctx context.Context, bodyStr string) {
+var notificationPost = delay.Func("notificationPost", func(ctx context.Context, url string, bodyStr string) {
 	log.Infof(ctx, "delay httpPost")
 
-	client := urlfetch.Client(ctx)
+	tr := &urlfetch.Transport{
+		Context: ctx,
+		AllowInvalidServerCertificate: true,
+	}
 
-	req, err := http.NewRequest("POST", pushUrl, strings.NewReader(bodyStr))
+	req, err := http.NewRequest("POST", url, strings.NewReader(bodyStr))
 	if err != nil {
 		log.Errorf(ctx, "httpPost request error: %v", err)
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
-	_, err = client.Do(req)
+	_, err = tr.RoundTrip(req)
 	if err != nil {
 		log.Errorf(ctx, "httpPost client do error: %v", err)
 		return
@@ -437,10 +464,13 @@ func saveArrivalOfGames(ctx context.Context, w http.ResponseWriter, shop string,
 	}
 }
 
-func postToIOS(ctx context.Context, w http.ResponseWriter, shop string, games []string, createdAt string, url string) {
-	param := Values{
-		Value1: shop,
-		Value2: strings.Join(games, ","),
+func push7(ctx context.Context, w http.ResponseWriter, shop string, games []string) {
+	param := Push7{
+		Title: "ボドゲ入荷速報",
+		Body: shop + "さんに " + strings.Join(games, " ,") + " が入荷しました！",
+		Icon: "https://board-gamers.appspot.com/img/icon.png",
+		Url: "https://board-gamers.appspot.com",
+		Apikey: push7Api.Apikey,
 	}
 	paramBytes, err := json.Marshal(param)
 	if err != nil {
@@ -449,7 +479,7 @@ func postToIOS(ctx context.Context, w http.ResponseWriter, shop string, games []
 	}
 	paramStr := string(paramBytes[:len(paramBytes)])
 
-	t, err := notificationPost.Task(paramStr)
+	t, err := notificationPost.Task("https://api.push7.jp/api/v1/" + push7Api.Appno + "/send", paramStr)
 	if err != nil {
 		log.Errorf(ctx, "notificationPost.Task error: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
