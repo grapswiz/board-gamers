@@ -1,16 +1,22 @@
 import IWindowService = angular.IWindowService;
 import IToastService = angular.material.IToastService;
 import IHttpService = angular.IHttpService;
+import IDialogService = angular.material.IDialogService;
 export class SettingsController {
+    isSupportedServiceWorker = true;
+
     isSubscribed: boolean;
     isSubscribedTrickplay = true;
     isSubscribedTendays = true;
 
+    isSubscribedWithPush7 = false;
+
     isPushEnabled = false;
     useNotifications = false;
 
-    constructor(private $http: IHttpService) {
+    constructor(private $http: IHttpService, private $window:IWindowService) {
         if (!("serviceWorker" in navigator)) {
+            this.isSupportedServiceWorker = false;
             console.log("Service workers aren't supported in this browser.");
             return;
         }
@@ -26,6 +32,9 @@ export class SettingsController {
 
             this.initializeState(reg);
         });
+    }
+
+    $onInit() {
     }
 
     initializeState(reg: any) {
@@ -158,6 +167,14 @@ export class SettingsController {
 
         return shops;
     }
+    
+    requireLogin() {
+        //TODO ログインしてるかどうかチェックし、してなかったらダイアログを表示する。拒否されたなどの場合はそこで処理を終える。
+    }
+
+    gotoPush7() {
+        this.$window.location.href = "//board-gamers.app.push7.jp";
+    }
 }
 
 export const Settings = {
@@ -166,20 +183,24 @@ export const Settings = {
     template: `
 <md-list>
             <md-subheader class="md-no-sticky">設定</md-subheader>
-            <md-list-item>
+            <md-list-item ng-show="$ctrl.isSupportedServiceWorker">
                 <md-icon md-svg-src="img/icons/bell.svg" class="avatar"></md-icon>
                 <p>通知を受け取る</p>
                 <md-checkbox class="md-secondary" ng-model="$ctrl.isSubscribed" ng-change="$ctrl.click()"></md-checkbox>
             </md-list-item>
-            <md-list-item ng-show="$ctrl.isSubscribed">
+            <md-list-item ng-show="$ctrl.isSupportedServiceWorker && $ctrl.isSubscribed">
                 <md-icon></md-icon>
                 <p>トリックプレイ</p>
                 <md-checkbox class="md-secondary" ng-model="$ctrl.isSubscribedTrickplay"></md-checkbox>
             </md-list-item>
-            <md-list-item ng-show="$ctrl.isSubscribed">
+            <md-list-item ng-show="$ctrl.isSupportedServiceWorker && $ctrl.isSubscribed">
                 <md-icon></md-icon>
                 <p>テンデイズ</p>
                 <md-checkbox class="md-secondary" ng-model="$ctrl.isSubscribedTendays"></md-checkbox>
+            </md-list-item>
+            <md-list-item ng-show="!$ctrl.isSupportedServiceWorker" ng-click="$ctrl.gotoPush7()">
+                <md-icon></md-icon>
+                <p>Push7で通知を受け取る</p>
             </md-list-item>
         </md-list>
     `

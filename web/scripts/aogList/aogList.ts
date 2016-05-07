@@ -25,7 +25,7 @@ export const AogList = {
     template: `
         <md-list layout-wrap>
             <md-subheader class="md-no-sticky">最新の入荷情報</md-subheader>
-            <md-list-item class="md-3-line md-long-text" ng-repeat="aog in ::$ctrl.aogs" ng-click="$ctrl.goTo(aog.url)">
+            <md-list-item class="md-3-line md-long-text" ng-repeat="aog in ::$ctrl.aogs" ng-click="$ctrl.goTo(aog.url)" aria-label="Go to Twitter">
                 <div class="md-list-item-text" ng-cloak>
                     <h3>{{::aog.shop}}</h3>
                     <p><span ng-repeat="game in ::aog.games">{{::game}}{{$last ? "" : ", "}}</span></p>

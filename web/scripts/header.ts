@@ -38,9 +38,9 @@ export const Header = {
             <span>ボ</span>
         </h1>
         <span flex></span>
-        <md-button ng-if="!$ctrl.auth.isLoggedIn"><a href="twitter/login">Twitterでログイン</a></md-button>
+        <md-button ng-if="!$ctrl.auth.isLoggedIn" aria-label="Login with Twitter"><a href="twitter/login">Twitterでログイン</a></md-button>
         <md-menu ng-if="$ctrl.auth.isLoggedIn">
-            <img ng-src="{{::$ctrl.profileImage($ctrl.auth.user)}}" width="37px" height="37px" style="border-radius: 37px" ng-click="$mdOpenMenu($event)">
+            <img ng-src="{{::$ctrl.profileImage($ctrl.auth.user)}}" width="37px" height="37px" style="border-radius: 37px" ng-click="$mdOpenMenu($event)" aria-label="Open Menu">
             <md-menu-content>
                 <md-menu-item>
                     <a class="md-button" href="twitter/logout">
