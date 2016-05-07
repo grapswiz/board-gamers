@@ -23,8 +23,8 @@
     "moment": "^2.13.0"
   },
   "devDependencies": {
-    "browserify": "^13.0.0",
-    "tsify": "^0.13.2",
+    "browserify": "^13.0.1",
+    "tsify": "^0.15.3",
     "watchify": "^3.7.0",
     "typescript": "^1.8.9",
     "concurrently": "^2.0.0"
