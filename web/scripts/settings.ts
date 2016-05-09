@@ -178,6 +178,10 @@ export const Settings = {
     controller: SettingsController,
     template: `
         <md-list>
+            <md-list-item>
+                <md-icon></md-icon>
+                <p>新しいボードゲームの入荷情報があった時にお使いの端末に通知が飛びます。</p>
+            </md-list-item>
             <md-subheader class="md-no-sticky">設定</md-subheader>
             <md-list-item ng-show="$ctrl.isSupportedServiceWorker">
                 <md-icon md-svg-src="img/icons/bell.svg" class="avatar"></md-icon>
