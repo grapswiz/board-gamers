@@ -53,16 +53,15 @@ type Values struct {
 }
 
 type Push7 struct {
-	Title string `json:"title"`
-	Body string `json:"body"`
-	Icon string `json:"icon"`
-	Url string `json:"url"`
+	Title  string `json:"title"`
+	Body   string `json:"body"`
+	Icon   string `json:"icon"`
+	Url    string `json:"url"`
 	Apikey string `json:"apikey"`
-
 }
 
 type Push7Api struct {
-	Appno string `json:"appno"`
+	Appno  string `json:"appno"`
 	Apikey string `json:"apikey"`
 }
 
@@ -457,10 +456,10 @@ func saveArrivalOfGames(ctx context.Context, w http.ResponseWriter, shop string,
 
 func push7(ctx context.Context, w http.ResponseWriter, shop string, games []string) {
 	param := Push7{
-		Title: "ボドゲ入荷速報",
-		Body: shop + "さんに " + strings.Join(games, " ,") + " が入荷しました！",
-		Icon: "https://board-gamers.appspot.com/img/icon.png",
-		Url: "https://board-gamers.appspot.com",
+		Title:  "ボドゲ入荷速報",
+		Body:   shop + "さんに " + strings.Join(games, " ,") + " が入荷しました！",
+		Icon:   "https://board-gamers.appspot.com/img/icon.png",
+		Url:    "https://board-gamers.appspot.com",
 		Apikey: push7Api.Apikey,
 	}
 	paramBytes, err := json.Marshal(param)
@@ -470,7 +469,7 @@ func push7(ctx context.Context, w http.ResponseWriter, shop string, games []stri
 	}
 	paramStr := string(paramBytes[:len(paramBytes)])
 
-	t, err := notificationPost.Task("https://api.push7.jp/api/v1/" + push7Api.Appno + "/send", paramStr)
+	t, err := notificationPost.Task("https://api.push7.jp/api/v1/"+push7Api.Appno+"/send", paramStr)
 	if err != nil {
 		log.Errorf(ctx, "notificationPost.Task error: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
