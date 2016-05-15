@@ -467,7 +467,7 @@ func push7(ctx context.Context, w http.ResponseWriter, shop string, games []stri
 		log.Errorf(ctx, "json marshal error: %v", err)
 		return
 	}
-	paramStr := string(paramBytes[:len(paramBytes)])
+	paramStr := string(paramBytes[:])
 
 	t, err := notificationPost.Task("https://api.push7.jp/api/v1/"+push7Api.Appno+"/send", paramStr)
 	if err != nil {
