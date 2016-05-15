@@ -457,7 +457,7 @@ func saveArrivalOfGames(ctx context.Context, w http.ResponseWriter, shop string,
 func push7(ctx context.Context, w http.ResponseWriter, shop string, games []string) {
 	param := Push7{
 		Title:  "ボドゲ入荷速報",
-		Body:   shop + "さんに " + strings.Join(games, " ,") + " が入荷しました！",
+		Body:   shop + "さんに " + strings.Join(games, ", ") + " が入荷しました！",
 		Icon:   "https://board-gamers.appspot.com/img/icon.png",
 		Url:    "https://board-gamers.appspot.com",
 		Apikey: push7Api.Apikey,
