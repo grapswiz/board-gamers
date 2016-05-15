@@ -37,7 +37,6 @@ var oauthClient = oauth.Client{
 }
 
 var secretKey string
-var pushUrl string
 var push7Api Push7Api
 
 type Tweet struct {
@@ -117,14 +116,6 @@ func init() {
 			panic(err)
 		}
 		secretKey = string(b)
-	}
-
-	{
-		b, err := ioutil.ReadFile("pushUrl")
-		if err != nil {
-			panic(err)
-		}
-		pushUrl = string(b)
 	}
 
 	{
