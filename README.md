@@ -17,7 +17,7 @@
 
 ## Requirement
 
-- [Goole App Engine](https://cloud.google.com/appengine/docs/go/) / Go
+- [Goole App Engine / Go](https://cloud.google.com/appengine/docs/go/)
 - Angular1
 
 ## Install
