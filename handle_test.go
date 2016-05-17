@@ -48,3 +48,54 @@ func TestExtractTendaysGames(t *testing.T) {
 	want = []string{"カウンシル・オブ・フォー", "アンユージュアルサスペクツ", "世界の七不思議デュエル"}
 	text = "「大いなる文明の曙（メガシヴィライゼーション）」用の大判スリーブを取り扱い開始しました。お役立ちアイテムコーナーの「スリーブ」ドロップダウンメニューからお選びください。\nカウンシル・オブ・フォー、アンユージュアルサスペクツ、世界の七不思議デュエルを再入荷しました。"
 }
+
+func TestExtractGameFieldGames(t *testing.T) {
+	{
+		// TODO
+		//want := []string{"ペアーズ:洋ナシデッキ", "ペアーズ:ゴブリンデッキ", "ペアーズ:リトルバードデッキ(通常版)", "ペアーズ:ファニーハッターデッキ", "ペアーズ:ボールゲームデッキ", "アルルの丘(Arler erde)　日本語版", "ゼロ　日本語版(Zero)"}
+		//text := `
+		//お世話になっております。ゲームフィールドです。
+		//新入荷・再入荷のお知らせです。
+		//
+		//新入荷
+		//1は1枚、2は2枚、3は3枚・・・10は10枚という、特徴的な構成のカードデッキシリーズです。
+		//
+		//手元にあるカードと同じ数字のカードを引くか引かないかの賭けに挑むかの判断と、賭けに成功するかどうかを繰り返すシンプルな運試しの基本ゲームをはじめ、さまざまなルールで遊ぶことができます。
+		//
+		//「新しいクラシックパブゲーム」の名前の通り、気軽に手軽に誰もがすぐに盛り上がることのできるルールがたくさん楽しめる、オススメゲームシリーズです。
+		//
+		//日本語版では、アメリカのクラウドファンディング「Kickstarter」で大成功した原版で人気の二デッキに加え、日本オリジナルデザインの新デッキを三種類用意いたしました。
+		//このデザインバリエーションの幅の広さも大きな魅力となっています。ぜひ、お気に入りのデッキを見つけてください。
+		//
+		//「ペアーズ:洋ナシデッキ」
+		//http://gamefield.sakura.ne.jp/products/detail.php?product_id=439
+		//※「洋ナシ(フルーツ)デッキ」には、基本ルールと基本ルールのより詳細な遊び方が入っています。
+		//
+		//「ペアーズ:ゴブリンデッキ」
+		//http://gamefield.sakura.ne.jp/products/detail.php?product_id=440
+		//※「ゴブリンデッキ」には、基本ルールと「ゴブリンポーカー」のルールが入っています。
+		//
+		//「ペアーズ:リトルバードデッキ(通常版)」
+		//http://gamefield.sakura.ne.jp/products/detail.php?product_id=441
+		//※「リトルバードデッキ」には、基本ルールと「ことりあつめ」のルールが入っています。
+		//
+		//「ペアーズ:ファニーハッターデッキ」
+		//http://gamefield.sakura.ne.jp/products/detail.php?product_id=442
+		//※「ファニーハッターデッキ」には、基本ルールと「プッシュ&プッシュ」のルールが入っています。
+		//
+		//「ペアーズ:ボールゲームデッキ」
+		//http://gamefield.sakura.ne.jp/products/detail.php?product_id=443
+		//※「ボールゲームデッキ」には、基本ルールと「スポーツ」のルールが入っています。
+		//
+		//再入荷
+		//「アルルの丘(Arler erde)　日本語版」
+		//http://gamefield.sakura.ne.jp/products/detail.php?product_id=420
+		//
+		//「ゼロ　日本語版(Zero)」
+		//http://gamefield.sakura.ne.jp/products/detail.php?product_id=365
+		//`
+		//if result := extractGamefieldGames(text); !reflect.DeepEqual(result, want) {
+		//	t.Errorf("extractTendaysGames = %v, want %v", result, want)
+		//}
+	}
+}

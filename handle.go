@@ -297,6 +297,10 @@ var fetchBanestoGames = delay.Func("fetchBanestoGames", func(ctx context.Context
 	//TODO ゲームがあればsaveArrivalOfGamesとpush
 })
 
+func extractGamefieldGames(text string) (games []string) {
+	return games
+}
+
 func TwitterLoginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 	httpClient := urlfetch.Client(ctx)
