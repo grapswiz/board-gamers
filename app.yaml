@@ -23,6 +23,8 @@ handlers:
   script: _go_app
 - url: /api.*
   script: _go_app
+- url: /_ah/mail.*
+  script: _go_app
 - url: /
   static_files: web/index.html
   upload: /
@@ -30,3 +32,5 @@ handlers:
   static_dir: web
 skip_files:
 - ^(.*/)?.*/node_modules/.*
+inbound_services:
+- mail

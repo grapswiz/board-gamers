@@ -18,6 +18,7 @@ import (
 	"google.golang.org/appengine/taskqueue"
 	"io/ioutil"
 	"net/url"
+	mail "github.com/curious-eyes/jmail"
 )
 
 const (
@@ -141,6 +142,8 @@ func init() {
 	http.HandleFunc("/twitter/login", TwitterLoginHandler)
 	http.HandleFunc("/twitter/callback", TwitterCallbackHandler)
 	http.HandleFunc("/twitter/logout", TwitterLogoutHandler)
+
+	http.HandleFunc("/_ah/mail/gamefield@board-gamers.appspotmail.com", GamefieldHandler)
 }
 
 func TrickplayHandler(w http.ResponseWriter, r *http.Request) {
@@ -296,6 +299,26 @@ var fetchBanestoGames = delay.Func("fetchBanestoGames", func(ctx context.Context
 	//TODO HTMLparse
 	//TODO ゲームがあればsaveArrivalOfGamesとpush
 })
+
+func GamefieldHandler(w http.ResponseWriter, r *http.Request)  {
+	ctx := appengine.NewContext(r)
+	defer r.Body.Close()
+	m, err := mail.ReadMessage(r.Body)
+	if err != nil {
+		log.Errorf(ctx, "Error reading r.Body: %v", err)
+		return
+	}
+	header := m.Header
+	log.Infof(ctx, "Date: %s", header.Get("Date"))
+	log.Infof(ctx, "From: %s", header.Get("From"))
+	log.Infof(ctx, "To: %s", header.Get("To"))
+	log.Infof(ctx, "Subject: %s", m.DecSubject())
+	body, err := m.DecBody()
+	if err != nil {
+		log.Errorf(ctx, "Error reading body: %v", err)
+	}
+	log.Infof(ctx, "%s", body)
+}
 
 func extractGamefieldGames(text string) (games []string) {
 	return games
