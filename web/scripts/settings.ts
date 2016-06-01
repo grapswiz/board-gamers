@@ -201,6 +201,7 @@ export const Settings = {
             <md-list-item ng-show="!$ctrl.isSupportedServiceWorker" ng-click="$ctrl.goToPush7()">
                 <md-icon></md-icon>
                 <p>Push7で通知を受け取る</p>
+                <md-button class="md-raised" href="//board-gamers.app.push7.jp" target="_blank">クリック！</md-button>
             </md-list-item>
         </md-list>
     `
