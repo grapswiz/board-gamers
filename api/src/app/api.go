@@ -1,8 +1,11 @@
-package board_gamers
+package app
 
 import (
 	"encoding/base64"
 	"encoding/json"
+	"net/http"
+	"strings"
+
 	"github.com/googlechrome/push-encryption-go/webpush"
 	"github.com/mjibson/goon"
 	"golang.org/x/net/context"
@@ -12,8 +15,6 @@ import (
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/taskqueue"
 	"google.golang.org/appengine/urlfetch"
-	"net/http"
-	"strings"
 )
 
 type Auth struct {
