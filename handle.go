@@ -160,7 +160,7 @@ func TrickplayHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !strings.Contains(t.Text, "#トリックプレイ") {
+	if !strings.Contains(t.Text, "入荷") {
 		log.Infof(ctx, "no nyuuka")
 		return
 	}
