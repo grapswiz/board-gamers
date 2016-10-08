@@ -1,23 +1,25 @@
-package board_gamers
+package app
 
 import (
 	"encoding/json"
+	"net/http"
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/mjibson/goon"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/delay"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/urlfetch"
-	"net/http"
-	"regexp"
-	"strings"
-	"time"
+
+	"io/ioutil"
+	"net/url"
 
 	"github.com/dghubble/sessions"
 	"github.com/garyburd/go-oauth/oauth"
 	"google.golang.org/appengine/taskqueue"
-	"io/ioutil"
-	"net/url"
 )
 
 const (
@@ -36,7 +38,6 @@ var oauthClient = oauth.Client{
 	TokenRequestURI:               "https://api.twitter.com/oauth/access_token",
 }
 
-var secretKey string
 var push7Api Push7Api
 
 type Tweet struct {
@@ -99,35 +100,6 @@ type UserInfo struct {
 }
 
 func init() {
-	{
-		b, err := ioutil.ReadFile("config.json")
-		if err != nil {
-			panic(err)
-		}
-		if err := json.Unmarshal(b, &oauthClient.Credentials); err != nil {
-			panic(err)
-		}
-	}
-
-	{
-		b, err := ioutil.ReadFile("secretKey")
-		if err != nil {
-			panic(err)
-		}
-		secretKey = string(b)
-	}
-
-	{
-		b, err := ioutil.ReadFile("push7api.json")
-		if err != nil {
-			panic(err)
-		}
-		if err := json.Unmarshal(b, &push7Api); err != nil {
-			panic(err)
-		}
-
-	}
-
 	http.HandleFunc("/webhook/trickplay", TrickplayHandler)
 	http.HandleFunc("/webhook/tendays", TendaysHandler)
 	http.HandleFunc("/webhook/banesto", BanestoHandler)
@@ -144,6 +116,8 @@ func init() {
 }
 
 func TrickplayHandler(w http.ResponseWriter, r *http.Request) {
+	secretKey := secretKey()
+
 	ctx := appengine.NewContext(r)
 
 	decoder := json.NewDecoder(r.Body)
@@ -197,6 +171,7 @@ func extractTrickplayGames(text string) (games []string) {
 }
 
 func TendaysHandler(w http.ResponseWriter, r *http.Request) {
+	secretKey := secretKey()
 	ctx := appengine.NewContext(r)
 
 	decoder := json.NewDecoder(r.Body)
@@ -251,6 +226,7 @@ func extractTendaysGames(text string) (games []string) {
 }
 
 func BanestoHandler(w http.ResponseWriter, r *http.Request) {
+	secretKey := secretKey()
 	ctx := appengine.NewContext(r)
 
 	decoder := json.NewDecoder(r.Body)
@@ -302,6 +278,16 @@ func extractGamefieldGames(text string) (games []string) {
 }
 
 func TwitterLoginHandler(w http.ResponseWriter, r *http.Request) {
+	{
+		b, err := ioutil.ReadFile("config.json")
+		if err != nil {
+			panic(err)
+		}
+		if err := json.Unmarshal(b, &oauthClient.Credentials); err != nil {
+			panic(err)
+		}
+	}
+
 	ctx := appengine.NewContext(r)
 	httpClient := urlfetch.Client(ctx)
 	tmpCred, err := oauthClient.RequestTemporaryCredentials(httpClient, "http://"+r.Host+"/twitter/callback", nil)
@@ -459,6 +445,17 @@ func saveArrivalOfGames(ctx context.Context, w http.ResponseWriter, shop string,
 }
 
 func push7(ctx context.Context, w http.ResponseWriter, shop string, games []string) {
+	{
+		b, err := ioutil.ReadFile("push7api.json")
+		if err != nil {
+			panic(err)
+		}
+		if err := json.Unmarshal(b, &push7Api); err != nil {
+			panic(err)
+		}
+
+	}
+
 	param := Push7{
 		Title:  "ボドゲ入荷速報",
 		Body:   shop + "さんに " + strings.Join(games, ", ") + " が入荷しました！",
@@ -483,5 +480,15 @@ func push7(ctx context.Context, w http.ResponseWriter, shop string, games []stri
 		log.Errorf(ctx, "taskqueue.Add error: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+}
+
+func secretKey() string {
+	{
+		b, err := ioutil.ReadFile("secretKey")
+		if err != nil {
+			panic(err)
+		}
+		return string(b)
 	}
 }

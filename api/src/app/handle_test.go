@@ -1,4 +1,4 @@
-package board_gamers
+package app
 
 import (
 	"reflect"
