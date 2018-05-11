@@ -1,20 +1,29 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
+	"github.com/favclip/ucon"
+	"github.com/favclip/ucon/swagger"
 	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
 )
 
 func init() {
-	http.HandleFunc("/", handler)
+	ucon.Middleware(UseAppengineContext)
+	ucon.Orthodox()
+	ucon.Middleware(swagger.RequestValidator())
+
+	ucon.DefaultMux.Prepare()
+	http.Handle("/", ucon.DefaultMux)
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello Root!")
+func UseAppengineContext(b *ucon.Bubble) error {
+	if b.Context == nil {
+		b.Context = appengine.NewContext(b.R)
+	} else {
+		b.Context = appengine.WithContext(b.Context, b.R)
+	}
+	b.R = b.R.WithContext(b.Context)
 
-	ctx := appengine.NewContext(r)
-	log.Infof(ctx, "Hello Doggy!")
+	return b.Next()
 }

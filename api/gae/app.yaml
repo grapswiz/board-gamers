@@ -5,5 +5,13 @@ inbound_services:
 - warmup
 
 handlers:
-- url: /.*
+- url: /api/.*
   script: _go_app
+
+# Swagger UI
+- url: /swagger-ui/
+  static_files: swagger-ui-dist/index.html
+  upload: swagger-ui-dist/index.html
+- url: /swagger-ui/(.*)
+  static_files: swagger-ui-dist/\1
+  upload: swagger-ui-dist/.*
